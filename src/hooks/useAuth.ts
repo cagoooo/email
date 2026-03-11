@@ -198,10 +198,12 @@ export function useAuth() {
 
   const signInWithGoogle = async () => {
     try {
+      // 使用完整路徑（含子目錄），確保 GitHub Pages /email/ 部署路徑正確
+      const redirectTo = window.location.origin + window.location.pathname.replace(/\/$/, '') + '/';
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin,
+          redirectTo,
         },
       });
 
