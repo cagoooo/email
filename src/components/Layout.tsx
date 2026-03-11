@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Menu, X, Trophy, Mail, Lock, User, Home, BarChart3, ShoppingBag, Coins } from 'lucide-react';
+import { Menu, X, Trophy, Mail, Lock, User, Home, BarChart3, ShoppingBag, Coins, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ROUTE_PATHS } from '@/lib/index';
 import { useGameProgress } from '@/hooks/useGameProgress';
+import { useAuth } from '@/hooks/useAuth';
 import { IMAGES } from '@/assets/images';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -27,7 +28,21 @@ const navItems = [
 
 export function Layout({ children }: LayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+  const accountMenuRef = useRef<HTMLDivElement>(null);
   const { progress, studentInfo } = useGameProgress();
+  const { profile, user, signOut } = useAuth();
+
+  // 點外部關閉帳號選單
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (accountMenuRef.current && !accountMenuRef.current.contains(e.target as Node)) {
+        setIsAccountMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const totalProgress = progress
     ? Math.round(
@@ -116,10 +131,77 @@ export function Layout({ children }: LayoutProps) {
                     </div>
 
                     <div className="h-8 w-px bg-border ml-1" />
-                    <div className="relative">
-                      <div className={`w-10 h-10 rounded-xl overflow-hidden border-2 flex items-center justify-center bg-muted/50 ${progress?.customization?.avatarFrame === 'neon-frame' ? 'border-cyan-400 shadow-[0_0_10px_#22d3ee]' : progress?.customization?.avatarFrame === 'gold-frame' ? 'border-yellow-400 shadow-[0_0_10px_#facc15]' : progress?.customization?.avatarFrame === 'matrix-frame' ? 'border-green-500 shadow-[0_0_10px_#22c55e]' : 'border-border'}`}>
-                        <User className="w-6 h-6 text-muted-foreground" />
-                      </div>
+                    {/* 帳號頭像 + 下拉選單 */}
+                    <div className="relative" ref={accountMenuRef}>
+                      <button
+                        onClick={() => setIsAccountMenuOpen(!isAccountMenuOpen)}
+                        className={`w-10 h-10 rounded-xl overflow-hidden border-2 flex items-center justify-center bg-muted/50 transition-all hover:scale-105 focus:outline-none ${progress?.customization?.avatarFrame === 'neon-frame' ? 'border-cyan-400 shadow-[0_0_10px_#22d3ee]'
+                            : progress?.customization?.avatarFrame === 'gold-frame' ? 'border-yellow-400 shadow-[0_0_10px_#facc15]'
+                              : progress?.customization?.avatarFrame === 'matrix-frame' ? 'border-green-500 shadow-[0_0_10px_#22c55e]'
+                                : 'border-border hover:border-primary/50'
+                          }`}
+                        title="帳號選單"
+                      >
+                        {(profile?.avatar_url || user?.user_metadata?.avatar_url) ? (
+                          <img
+                            src={profile?.avatar_url || user?.user_metadata?.avatar_url}
+                            alt="大頭照"
+                            className="w-full h-full object-cover"
+                            referrerPolicy="no-referrer"
+                          />
+                        ) : (
+                          <User className="w-6 h-6 text-muted-foreground" />
+                        )}
+                      </button>
+
+                      {/* 下拉帳號選單 */}
+                      <AnimatePresence>
+                        {isAccountMenuOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: -8 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: -8 }}
+                            transition={{ duration: 0.15 }}
+                            className="absolute right-0 top-12 w-52 bg-background/95 backdrop-blur-xl border border-primary/20 rounded-2xl shadow-2xl overflow-hidden z-50"
+                          >
+                            <div className="p-4 border-b border-primary/10">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl overflow-hidden border border-primary/20 flex-shrink-0">
+                                  {(profile?.avatar_url || user?.user_metadata?.avatar_url) ? (
+                                    <img
+                                      src={profile?.avatar_url || user?.user_metadata?.avatar_url}
+                                      alt="大頭照"
+                                      className="w-full h-full object-cover"
+                                      referrerPolicy="no-referrer"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full flex items-center justify-center bg-muted">
+                                      <User className="w-5 h-5 text-muted-foreground" />
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="flex flex-col overflow-hidden">
+                                  <span className="text-sm font-bold text-foreground truncate">
+                                    {profile?.display_name || user?.user_metadata?.full_name || '使用者'}
+                                  </span>
+                                  <span className="text-xs text-muted-foreground truncate">
+                                    {user?.email || ''}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="p-2">
+                              <button
+                                onClick={async () => { await signOut(); setIsAccountMenuOpen(false); }}
+                                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-destructive hover:bg-destructive/10 transition-colors"
+                              >
+                                <LogOut className="w-4 h-4" />
+                                登出帳號
+                              </button>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   </Card>
                 </div>
