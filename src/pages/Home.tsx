@@ -38,7 +38,7 @@ export default function Home() {
     console.log("Home 狀態更新 - ProgressLoading:", isProgressLoading, "AuthLoading:", isAuthLoading, "HasProfile:", !!profile, "HasStudentInfo:", !!studentInfo);
   }, [isProgressLoading, isAuthLoading, !!profile, !!studentInfo]);
 
-  // 安全機制：如果在 5 秒內還在 Load，且其實已經有 Profile/StudentInfo，就強制解除
+  // 安全機制 A：當有資料但仍在 Loading 時，3 秒後強制解除
   const [safetyCleared, setSafetyCleared] = React.useState(false);
   React.useEffect(() => {
     if ((isProgressLoading || isAuthLoading) && (profile || studentInfo)) {
@@ -50,8 +50,18 @@ export default function Home() {
     }
   }, [isProgressLoading, isAuthLoading, !!profile, !!studentInfo]);
 
-  // 決定最終載入狀態：優先權 Profile > Safety > Loading
-  const isGlobalLoading = !safetyCleared && (isProgressLoading || isAuthLoading) && !profile;
+  // 安全機制 B：無條件最長等待 4 秒，確保匿名訪客不會永久轉圈
+  const [maxTimeoutCleared, setMaxTimeoutCleared] = React.useState(false);
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      console.warn("Max timeout: Forcing loading clear after 4 seconds.");
+      setMaxTimeoutCleared(true);
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, []); // 只在 mount 時執行一次
+
+  // 決定最終載入狀態：任何一個解除條件滿足就停止轉圈
+  const isGlobalLoading = !safetyCleared && !maxTimeoutCleared && (isProgressLoading || isAuthLoading) && !profile;
 
   // 當 Supabase Profile 載入時，自動同步到 StudentInfo
   // 加入 user(登入狀態)雙重檢查：避免登出後 profile=null 前就出現重設鼓環
