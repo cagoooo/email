@@ -172,6 +172,11 @@ export function useAuth() {
   };
 
   const signOut = async () => {
+    // 先同步清除前端狀態，避免 profile→studentInfo effect 在 signOut 完成前觸發重設循環
+    setUser(null);
+    setSession(null);
+    setProfile(null);
+    fetchLock.current = null;
     const { error } = await supabase.auth.signOut();
     return { error };
   };

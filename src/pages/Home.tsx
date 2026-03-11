@@ -25,7 +25,7 @@ import { springPresets, fadeInUp, staggerContainer, staggerItem } from '@/lib/mo
 export default function Home() {
   const navigate = useNavigate();
   const { progress, studentInfo, isLoading: isProgressLoading, setStudentInfo } = useGameProgress();
-  const { signInWithGoogle, profile, loading: isAuthLoading, signOut } = useAuth();
+  const { signInWithGoogle, user, profile, loading: isAuthLoading, signOut } = useAuth();
   const [localStudentId, setLocalStudentId] = React.useState('');
   const [error, setError] = React.useState('');
   const [isLoggingIn, setIsLoggingIn] = React.useState(false);
@@ -54,16 +54,17 @@ export default function Home() {
   const isGlobalLoading = !safetyCleared && (isProgressLoading || isAuthLoading) && !profile;
 
   // 當 Supabase Profile 載入時，自動同步到 StudentInfo
+  // 加入 user(登入狀態)雙重檢查：避免登出後 profile=null 前就出現重設鼓環
   React.useEffect(() => {
-    if (profile && !studentInfo) {
+    if (user && profile && !studentInfo) {
       console.log("偵測到 Supabase Profile，同步至遊戲狀態:", profile.display_name);
       setStudentInfo({
-        studentId: profile.display_name || '使用者',
-        email: profile.id,
+        studentId: profile.student_id || profile.display_name || '使用者',
+        email: user.email || '',
         hasCustomPassword: true,
       });
     }
-  }, [profile, studentInfo, setStudentInfo]);
+  }, [user, profile, studentInfo, setStudentInfo]);
 
   const handleStartAdventure = () => {
     if (!validateStudentId(localStudentId)) {
