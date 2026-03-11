@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Trophy, Lock, Target, ArrowRight, Sparkles, Calendar, Brain, User, ShoppingBag } from 'lucide-react';
 import { Layout } from '@/components/Layout';
 import { ProgressCard, LearningModuleCard } from '@/components/GameCards';
@@ -23,6 +23,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { springPresets, fadeInUp, staggerContainer, staggerItem } from '@/lib/motion';
 
 export default function Home() {
+  const navigate = useNavigate();
   const { progress, studentInfo, isLoading: isProgressLoading, setStudentInfo } = useGameProgress();
   const { signInWithGoogle, profile, loading: isAuthLoading, signOut } = useAuth();
   const [localStudentId, setLocalStudentId] = React.useState('');
@@ -390,13 +391,14 @@ export default function Home() {
                             streak={streak}
                             onStart={() => {
                               // 根據挑戰類型導航到對應頁面
-                              const routes = {
+                              // mixed（綜合挑戰）導向 Email 學習，不再導回首頁
+                              const routes: Record<string, string> = {
                                 email: ROUTE_PATHS.EMAIL_LEARNING,
                                 studentId: ROUTE_PATHS.STUDENT_ID_GAME,
                                 password: ROUTE_PATHS.PASSWORD_SECURITY,
-                                mixed: ROUTE_PATHS.HOME,
+                                mixed: ROUTE_PATHS.EMAIL_LEARNING,
                               };
-                              window.location.href = routes[todayChallenge.type];
+                              navigate(routes[todayChallenge.type] || ROUTE_PATHS.EMAIL_LEARNING);
                             }}
                           />
                         </div>
