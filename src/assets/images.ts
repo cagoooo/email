@@ -1,8 +1,8 @@
 // Do not edit manually
 
 export const IMAGES = {
-  CUTE_EMAIL_ICON_20260310_002532_74: "/images/cute_email_icon_20260310_002532.png",
-  CUTE_SCHOOL_BUILDING_20260310_002534_72: "/images/cute_school_building_20260310_002534.png",
+  CUTE_EMAIL_ICON_20260310_002532_74: "./images/cute_email_icon_20260310_002532.png",
+  CUTE_SCHOOL_BUILDING_20260310_002534_72: "./images/cute_school_building_20260310_002534.png",
   EMAIL_CARTOON_1: "https://images.unsplash.com/photo-1622503247445-cfe020cd0e5b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MTk0NTh8MHwxfHNlYXJjaHwyfHxlbWFpbCUyMGljb24lMjBjYXJ0b29uJTIwaWxsdXN0cmF0aW9ufGVufDB8Mnx8fDE3NzMxMDIzMTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
   EMAIL_CARTOON_2: "https://images.unsplash.com/photo-1703584449021-4cfdfe9650dd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MTk0NTh8MHwxfHNlYXJjaHwxfHxlbWFpbCUyMGljb24lMjBjYXJ0b29uJTIwaWxsdXN0cmF0aW9ufGVufDB8Mnx8fDE3NzMxMDIzMTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
   EMAIL_CARTOON_3: "https://images.unsplash.com/photo-1669756698745-99f813d8ce18?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MTk0NTh8MHwxfHNlYXJjaHwzfHxlbWFpbCUyMGljb24lMjBjYXJ0b29uJTIwaWxsdXN0cmF0aW9ufGVufDB8Mnx8fDE3NzMxMDIzMTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
@@ -46,8 +46,8 @@ export const IMAGES = {
   KIDS_LEARNING_7: "https://images.unsplash.com/photo-1748691661032-97e9ec7c6ff5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MTk0NTh8MHwxfHNlYXJjaHwyfHxjaGlsZHJlbiUyMGxlYXJuaW5nJTIwaWxsdXN0cmF0aW9uJTIwY2FydG9vbnxlbnwwfDB8fHwxNzczMTAyMzE4fDA&ixlib=rb-4.1.0&q=80&w=1080",
   KIDS_LEARNING_8: "https://images.unsplash.com/photo-1726831662572-ea2bb962dc4f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MTk0NTh8MHwxfHNlYXJjaHwzfHxjaGlsZHJlbiUyMGxlYXJuaW5nJTIwaWxsdXN0cmF0aW9uJTIwY2FydG9vbnxlbnwwfDB8fHwxNzczMTAyMzE4fDA&ixlib=rb-4.1.0&q=80&w=1080",
   KIDS_LEARNING_9: "https://images.unsplash.com/photo-1616992926829-e879b14927fc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MTk0NTh8MHwxfHNlYXJjaHwxMHx8Y2hpbGRyZW4lMjBsZWFybmluZyUyMGlsbHVzdHJhdGlvbiUyMGNhcnRvb258ZW58MHwwfHx8MTc3MzEwMjMxOHww&ixlib=rb-4.1.0&q=80&w=1080",
-  KIDS_LEARNING_COMPUTERS_20260310_002533_73: "/images/kids_learning_computers_20260310_002533.png",
-  KIDS_PLAYING_GAMES_20260310_002534_75: "/images/kids_playing_games_20260310_002534.png",
+  KIDS_LEARNING_COMPUTERS_20260310_002533_73: "./images/kids_learning_computers_20260310_002533.png",
+  KIDS_PLAYING_GAMES_20260310_002534_75: "./images/kids_playing_games_20260310_002534.png",
   SCHOOL_BUILDING_1: "https://images.unsplash.com/photo-1574958269340-fa927503f3dd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4Mzc5NTV8MHwxfHNlYXJjaHw1fHxzY2hvb2wlMjBidWlsZGluZyUyMG1vZGVybnxlbnwwfDB8fHwxNzczMTAxMTc1fDA&ixlib=rb-4.1.0&q=80&w=1080",
   SCHOOL_BUILDING_2: "https://images.unsplash.com/photo-1730106443463-0fb1512c5e60?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4Mzc5NTV8MHwxfHNlYXJjaHwyfHxzY2hvb2wlMjBidWlsZGluZyUyMG1vZGVybnxlbnwwfDB8fHwxNzczMTAxMTc1fDA&ixlib=rb-4.1.0&q=80&w=1080",
   SCHOOL_BUILDING_3: "https://images.unsplash.com/photo-1741638511453-23221e0c11e8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4Mzc5NTV8MHwxfHNlYXJjaHw3fHxzY2hvb2wlMjBidWlsZGluZyUyMG1vZGVybnxlbnwwfDB8fHwxNzczMTAxMTc1fDA&ixlib=rb-4.1.0&q=80&w=1080",
