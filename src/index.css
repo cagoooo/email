@@ -1,0 +1,520 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Fredoka:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+==========================================================================
+【AI HANDOVER NOTE】
+1. DESIGN PHILOSOPHY:
+   - Playful Learning First: 設計以「遊戲化學習」為核心，透過友善、活潑的視覺語言降低學生對技術內容的焦慮感
+   - Joyful Minimalism: 結合 Neo-minimalism 的簡潔性與 Playful design 的趣味性，使用圓潤的幾何形狀、柔和的色彩過渡，創造輕鬆但不幼稚的學習環境
+   - Achievement-Driven UI: 採用 Bento surfaces 模組化佈局，每個學習模組都是獨立的「成就卡片」，配合進度條、徽章系統等遊戲化元素
+   - 為什麼選擇這種風格：學生族群需要視覺上的親和力與即時反饋，過於嚴肅的企業風格會降低參與度；同時需要保持專業感以建立對學校系統的信任
+
+2. TYPOGRAPHY:
+   - Sans 字體選擇：Fredoka 作為主要 UI 字體，其圓潤的幾何造型帶來友善、現代的氣質，特別適合教育場景；Noto Sans TC 確保繁體中文的優秀可讀性和視覺一致性
+   - Mono 字體用途：JetBrains Mono 用於顯示 Email 地址（@mail2.smes.tyc.edu.tw）、學號、密碼等技術內容，其清晰的字符區分度幫助學生準確識別每個字符，避免混淆（如 0/O, 1/l）
+
+3. COLOR SYSTEM:
+   - 品牌主色：選擇 H=260（紫藍色系）作為主色相，象徵「學習」與「科技」的結合，紫色在教育心理學中代表創造力與智慧，藍色則傳達信任與穩定
+   - --brand 映射邏輯：--brand 直接映射到 --primary（主要互動元素如按鈕、進度條），--accent 使用 H=180（青綠色）作為成就/獎勵的視覺提示，--ring 使用略高飽和度的 --primary 變體以增強焦點可見性
+   - 語義色設計：success (H=150 翠綠色) 用於答對題目、完成任務；warning (H=45 活潑橙色) 用於提示和引導；destructive (H=10 柔和紅色) 用於錯誤但不嚴厲，保持鼓勵性的學習氛圍
+
+4. USAGE GUIDE:
+   - 布局類型：Centered container (max-width: 1200px)，適合遊戲化學習介面，讓學生專注於中央內容區域
+   - 推薦特效：使用 subtle backdrop-blur (blur-sm) 於卡片懸浮狀態，創造輕微的景深感；為成就徽章添加 soft glow (box-shadow with brand color) 增強獎勵的視覺吸引力；按鈕使用 scale transform 和 color transition 提供即時反饋
+   - 項目特定規則：Email 地址顯示區域必須使用 mono 字體並加大字號 (text-lg/xl)；進度條使用漸變色 (gradient from primary to accent) 增強動態感；錯誤提示使用 shake animation 而非靜態紅色，保持友善氛圍；成就卡片使用 rounded-2xl 大圓角配合 subtle shadow 創造「可收集」的視覺感受
+==========================================================================
+*/
+
+:root {
+  /* Typography */
+  --font-sans: 'Fredoka', 'Noto Sans TC', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Noto Sans TC', monospace;
+
+  /* Radius */
+  --radius: 1rem;
+
+  /* Playful & Vibrant UI Tokens (OKLCH) */
+  --background: oklch(0.99 0.01 260);
+  --foreground: oklch(0.20 0.03 260);
+  --card: oklch(1.0 0.0 0);
+  --card-foreground: oklch(0.25 0.03 260);
+  --popover: oklch(1.0 0.0 0);
+  --popover-foreground: oklch(0.20 0.03 260);
+  --primary: oklch(0.60 0.22 260);
+  --primary-foreground: oklch(0.98 0.01 260);
+  --secondary: oklch(0.94 0.02 260);
+  --secondary-foreground: oklch(0.30 0.04 260);
+  --muted: oklch(0.96 0.01 260);
+  --muted-foreground: oklch(0.50 0.02 260);
+  --accent: oklch(0.70 0.18 180);
+  /* Vibrant Teal */
+  --accent-foreground: oklch(0.15 0.05 180);
+  --destructive: oklch(0.60 0.22 25);
+  --destructive-foreground: oklch(0.98 0.01 25);
+  --border: oklch(0.90 0.01 260);
+  --input: oklch(0.90 0.01 260);
+  --ring: oklch(0.60 0.22 260);
+
+  /* Chart Tokens */
+  --chart-1: oklch(0.60 0.18 260);
+  --chart-2: oklch(0.65 0.16 180);
+  --chart-3: oklch(0.62 0.17 150);
+  --chart-4: oklch(0.58 0.19 45);
+  --chart-5: oklch(0.56 0.20 320);
+
+  /* Sidebar Tokens */
+  --sidebar: oklch(0.97 0.008 260);
+  --sidebar-foreground: oklch(0.35 0.020 260);
+  --sidebar-primary: oklch(0.55 0.18 260);
+  --sidebar-primary-foreground: oklch(0.98 0.005 260);
+  --sidebar-accent: oklch(0.65 0.15 180);
+  --sidebar-accent-foreground: oklch(0.98 0.005 180);
+  --sidebar-border: oklch(0.90 0.010 260);
+  --sidebar-ring: oklch(0.55 0.22 260);
+}
+
+.dark {
+  --background: oklch(0.14 0.020 260);
+  --foreground: oklch(0.92 0.010 260);
+  --card: oklch(0.16 0.022 260);
+  --card-foreground: oklch(0.90 0.010 260);
+  --popover: oklch(0.14 0.020 260);
+  --popover-foreground: oklch(0.92 0.010 260);
+  --primary: oklch(0.65 0.22 260);
+  --primary-foreground: oklch(0.15 0.020 260);
+  --secondary: oklch(0.22 0.025 260);
+  --secondary-foreground: oklch(0.88 0.012 260);
+  --muted: oklch(0.20 0.022 260);
+  --muted-foreground: oklch(0.62 0.015 260);
+  --accent: oklch(0.70 0.18 180);
+  --accent-foreground: oklch(0.15 0.020 180);
+  --destructive: oklch(0.62 0.24 10);
+  --destructive-foreground: oklch(0.95 0.008 10);
+  --border: oklch(0.26 0.025 260);
+  --input: oklch(0.26 0.025 260);
+  --ring: oklch(0.65 0.26 260);
+
+  /* Chart Tokens */
+  --chart-1: oklch(0.65 0.22 260);
+  --chart-2: oklch(0.70 0.20 180);
+  --chart-3: oklch(0.68 0.21 150);
+  --chart-4: oklch(0.64 0.23 45);
+  --chart-5: oklch(0.62 0.24 320);
+
+  /* Sidebar Tokens */
+  --sidebar: oklch(0.12 0.022 260);
+  --sidebar-foreground: oklch(0.80 0.015 260);
+  --sidebar-primary: oklch(0.65 0.22 260);
+  --sidebar-primary-foreground: oklch(0.15 0.020 260);
+  --sidebar-accent: oklch(0.70 0.18 180);
+  --sidebar-accent-foreground: oklch(0.15 0.020 180);
+  --sidebar-border: oklch(0.24 0.025 260);
+  --sidebar-ring: oklch(0.65 0.26 260);
+}
+
+@theme inline {
+  /* Shadcn Core Mapping */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Charts Mapping */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Sidebar Mapping */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Typography */
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  /* Radius */
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply scroll-smooth antialiased;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans min-h-screen;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-semibold tracking-tight;
+  }
+
+  code,
+  pre {
+    @apply font-mono;
+  }
+
+  ::selection {
+    @apply bg-primary/20 text-primary;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/20 rounded-full hover:bg-muted-foreground/40;
+  }
+}
+
+/* 童趣和積極的動畫效果 */
+@keyframes bounce-gentle {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in oklch, var(--primary) 40%, transparent);
+  }
+
+  50% {
+    box-shadow: 0 0 0 8px color-mix(in oklch, var(--primary) 0%, transparent);
+  }
+}
+
+@keyframes wiggle {
+
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(1deg);
+  }
+
+  75% {
+    transform: rotate(-1deg);
+  }
+}
+
+@keyframes sparkle {
+
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.8) rotate(0deg);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.2) rotate(180deg);
+  }
+}
+
+@keyframes gradient-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes mesh-gradient {
+  0% {
+    background-position: 0% 0%;
+  }
+
+  50% {
+    background-position: 100% 100%;
+  }
+
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+@keyframes gentle-shake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-4px);
+  }
+
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+}
+
+/* 成就和獎勵相關的特殊效果 */
+@layer components {
+  .achievement-glow {
+    animation: pulse-glow 2s infinite;
+  }
+
+  .success-bounce {
+    animation: bounce-gentle 0.6s ease-in-out;
+  }
+
+  .playful-wiggle {
+    animation: wiggle 0.5s ease-in-out;
+  }
+
+  .sparkle-effect {
+    animation: sparkle 1.5s ease-in-out infinite;
+  }
+
+  /* 學習進度相關的視覺增強 */
+  .progress-bar-animated {
+    background: linear-gradient(90deg,
+        hsl(var(--primary)),
+        hsl(var(--accent)),
+        hsl(var(--primary)));
+    background-size: 200% 100%;
+    animation: gradient-flow 3s ease-in-out infinite;
+  }
+
+  /* 互動元素的友善反饋 */
+  .interactive-element {
+    @apply transition-all duration-200 ease-out;
+  }
+
+  .interactive-element:hover {
+    @apply -translate-y-0.5 scale-105;
+    box-shadow: 0 8px 25px -8px color-mix(in oklch, var(--primary) 30%, transparent);
+  }
+
+  .interactive-element:active {
+    @apply translate-y-0 scale-95;
+  }
+
+  /* 錯誤提示的溫和處理 */
+  .gentle-error {
+    @apply bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-200;
+    animation: gentle-shake 0.5s ease-in-out;
+  }
+
+  /* 成功狀態的慶祝效果 */
+  .celebration-card {
+    @apply bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-300 relative overflow-hidden;
+  }
+
+  .celebration-card::before {
+    content: '';
+    @apply absolute -top-1/2 -left-1/2 w-full h-full;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.3) 50%,
+        transparent 70%);
+    animation: shine 2s ease-in-out infinite;
+  }
+
+  /* 學習模組卡片的特殊效果 - 玻璃擬態 */
+  .learning-module-card {
+    @apply bg-white/70 backdrop-blur-md border border-white/40 transition-all duration-300 ease-out;
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.05),
+      0 2px 4px -1px rgba(0, 0, 0, 0.03),
+      inset 0 0 20px rgba(255, 255, 255, 0.5);
+  }
+
+  .learning-module-card:hover {
+    @apply -translate-y-2 bg-white/90 border-primary/30;
+    box-shadow:
+      0 20px 25px -5px color-mix(in oklch, var(--primary) 15%, transparent),
+      0 10px 10px -5px color-mix(in oklch, var(--primary) 10%, transparent);
+  }
+
+  /* Email 地址顯示的特殊樣式 */
+  .email-display {
+    @apply font-mono text-lg font-semibold bg-gradient-to-br from-muted/50 to-muted/30 border-2 border-muted-foreground/20 rounded-lg px-4 py-3 tracking-wide;
+  }
+
+  /* 成就徽章的收集感設計 */
+  .achievement-badge {
+    @apply bg-gradient-to-br from-primary to-primary/80 border-4 border-primary/40 rounded-full transition-all duration-300 ease-out;
+    box-shadow:
+      0 4px 12px color-mix(in oklch, var(--primary) 25%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  .achievement-badge:hover {
+    @apply -translate-y-0.5 scale-105;
+    box-shadow:
+      0 8px 20px color-mix(in oklch, var(--primary) 35%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  /* 每日挑戰卡片 */
+  .daily-challenge-card {
+    @apply bg-gradient-to-br from-orange-50 to-yellow-50 border-2 border-orange-200 hover:border-orange-300 transition-all duration-300;
+  }
+
+  /* AI 提示卡片 */
+  .ai-tip-card {
+    @apply bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 backdrop-blur-sm;
+  }
+
+  /* 學習分析卡片 */
+  .analytics-card {
+    @apply bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200;
+  }
+}
+
+/* Avatar Frames & Customization */
+.neon-frame {
+  border-color: #22d3ee !important;
+  box-shadow: 0 0 15px rgba(34, 211, 238, 0.6), inset 0 0 5px rgba(34, 211, 238, 0.4) !important;
+  animation: neon-pulse 2s infinite alternate;
+}
+
+@keyframes neon-pulse {
+  from {
+    box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+  }
+
+  to {
+    box-shadow: 0 0 25px rgba(34, 211, 238, 0.8);
+  }
+}
+
+.gold-frame {
+  border-color: #fbbf24 !important;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.1)) !important;
+  box-shadow: 0 0 15px rgba(251, 191, 36, 0.5) !important;
+  position: relative;
+}
+
+.gold-frame::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: gold-shine 3s infinite;
+  pointer-events: none;
+}
+
+@keyframes gold-shine {
+  0% {
+    left: -100%;
+  }
+
+  20% {
+    left: 100%;
+  }
+
+  100% {
+    left: 100%;
+  }
+}
+
+.matrix-frame {
+  border-color: #22c55e !important;
+  box-shadow: 0 0 10px #22c55e !important;
+  background-image: linear-gradient(rgba(34, 197, 94, 0.1) 1px, transparent 1px) !important;
+  background-size: 100% 3px;
+  animation: matrix-scanline 4s linear infinite;
+}
+
+@keyframes matrix-scanline {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 0 100%;
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "name": "桃園市石門國小 Email 學習遊戲",
+  "short_name": "石門Email學習",
+  "description": "透過遊戲化方式學習學校 Email 使用，提升數位素養",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "zh-TW",
+  "categories": ["education", "games", "productivity"],
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "開始學習",
+      "short_name": "學習",
+      "description": "直接進入學習模式",
+      "url": "/email-learning"
+    },
+    {
+      "name": "每日挑戰",
+      "short_name": "挑戰",
+      "description": "查看今日學習挑戰",
+      "url": "/#daily-challenge"
+    }
+  ]
+}

@@ -1,0 +1,432 @@
+import type { GameLevel, Achievement, EmailQuestion, PasswordTip, ShopItem } from '@/lib/index';
+
+export const GAME_LEVELS: GameLevel[] = [
+  {
+    id: 'email-basics',
+    title: 'Email 基礎認識',
+    description: '學習 Email 地址的組成結構',
+    difficulty: 'easy',
+    requiredScore: 60,
+    isLocked: false,
+  },
+  {
+    id: 'email-practice',
+    title: 'Email 實戰練習',
+    description: '透過互動遊戲熟悉 Email 地址',
+    difficulty: 'medium',
+    requiredScore: 75,
+    isLocked: false,
+  },
+  {
+    id: 'student-id-memory',
+    title: '學號記憶挑戰',
+    description: '用有趣的方式記住你的學號',
+    difficulty: 'medium',
+    requiredScore: 70,
+    isLocked: false,
+  },
+  {
+    id: 'password-basics',
+    title: '密碼安全入門',
+    description: '了解密碼安全的重要性',
+    difficulty: 'easy',
+    requiredScore: 65,
+    isLocked: false,
+  },
+  {
+    id: 'password-creator',
+    title: '創意密碼生成器',
+    description: '創造一個安全又好記的密碼',
+    difficulty: 'hard',
+    requiredScore: 80,
+    isLocked: false,
+  },
+  {
+    id: 'final-challenge',
+    title: '終極挑戰',
+    description: '綜合測驗你的所有學習成果',
+    difficulty: 'hard',
+    requiredScore: 90,
+    isLocked: true,
+  },
+];
+
+export const ACHIEVEMENTS: Achievement[] = [
+  {
+    id: 'first-login',
+    title: '初次登入',
+    description: '完成第一次學習',
+    icon: '🎯',
+    unlocked: false,
+  },
+  {
+    id: 'email-master',
+    title: 'Email 大師',
+    description: '完成所有 Email 學習關卡',
+    icon: '📧',
+    unlocked: false,
+  },
+  {
+    id: 'student-id-expert',
+    title: '學號專家',
+    description: '在學號記憶遊戲中獲得滿分',
+    icon: '🎓',
+    unlocked: false,
+  },
+  {
+    id: 'password-guardian',
+    title: '密碼守護者',
+    description: '創建一個強度為「強」的密碼',
+    icon: '🔐',
+    unlocked: false,
+  },
+  {
+    id: 'speed-learner',
+    title: '速度學習者',
+    description: '在 10 分鐘內完成一個關卡',
+    icon: '⚡',
+    unlocked: false,
+  },
+  {
+    id: 'perfect-score',
+    title: '完美分數',
+    description: '在任一測驗中獲得 100 分',
+    icon: '💯',
+    unlocked: false,
+  },
+  {
+    id: 'persistent-learner',
+    title: '堅持學習',
+    description: '連續 3 天登入學習',
+    icon: '🔥',
+    unlocked: false,
+  },
+  {
+    id: 'all-rounder',
+    title: '全能學習者',
+    description: '完成所有學習模組',
+    icon: '🏆',
+    unlocked: false,
+  },
+  {
+    id: 'helper',
+    title: '樂於助人',
+    description: '幫助 5 位同學完成學習',
+    icon: '🤝',
+    unlocked: false,
+  },
+  {
+    id: 'champion',
+    title: '終極冠軍',
+    description: '解鎖所有成就',
+    icon: '👑',
+    unlocked: false,
+  },
+];
+
+export const EMAIL_QUESTIONS: EmailQuestion[] = [
+  {
+    id: 'q1',
+    question: '我們學校的 Email 網域是什麼？',
+    options: [
+      '@gmail.com',
+      '@mail2.smes.tyc.edu.tw',
+      '@yahoo.com.tw',
+      '@outlook.com',
+    ],
+    correctAnswer: 1,
+    explanation: '我們學校使用的 Email 網域是 @mail2.smes.tyc.edu.tw，這是桃園市石門國小專屬的電子郵件系統。',
+  },
+  {
+    id: 'q2',
+    question: 'Email 地址的帳號部分是什麼？',
+    options: [
+      '學生姓名',
+      '學生學號',
+      '出生日期',
+      '班級座號',
+    ],
+    correctAnswer: 1,
+    explanation: 'Email 帳號使用的是你的學號，這樣可以確保每個學生都有唯一的 Email 地址。',
+  },
+  {
+    id: 'q3',
+    question: '完整的 Email 地址格式是？',
+    options: [
+      '學號@mail2.smes.tyc.edu.tw',
+      'mail.smes.tyc.edu.tw@學號',
+      '學號.mail.smes.tyc.edu.tw',
+      'mail.smes.tyc.edu.tw/學號',
+    ],
+    correctAnswer: 0,
+    explanation: 'Email 地址的正確格式是：學號 + @ + 網域名稱，例如：123456@mail2.smes.tyc.edu.tw',
+  },
+  {
+    id: 'q4',
+    question: '如果學號是 234567，完整的 Email 地址是？',
+    options: [
+      '234567mail.smes.tyc.edu.tw',
+      '234567@mail2.smes.tyc.edu.tw',
+      'mail.smes.tyc.edu.tw234567',
+      '234567#mail.smes.tyc.edu.tw',
+    ],
+    correctAnswer: 1,
+    explanation: '正確答案是 234567@mail2.smes.tyc.edu.tw，記得要用 @ 符號連接學號和網域。',
+  },
+  {
+    id: 'q5',
+    question: 'Email 地址中的 @ 符號代表什麼意思？',
+    options: [
+      '在...的意思',
+      '屬於...的意思',
+      '連接帳號和網域',
+      '以上皆是',
+    ],
+    correctAnswer: 3,
+    explanation: '@ 符號在 Email 中有多重意義，它連接了使用者帳號和郵件伺服器網域，可以理解為「在...」或「屬於...」。',
+  },
+  {
+    id: 'q6',
+    question: '為什麼每個學生的 Email 地址都不一樣？',
+    options: [
+      '因為每個人的姓名不同',
+      '因為每個人的學號是唯一的',
+      '因為每個人的班級不同',
+      '因為每個人的年齡不同',
+    ],
+    correctAnswer: 1,
+    explanation: '學號是每個學生的唯一識別碼，所以用學號作為 Email 帳號可以確保每個人都有獨特的 Email 地址。',
+  },
+  {
+    id: 'q7',
+    question: '登入學校 Email 時，帳號要輸入什麼？',
+    options: [
+      '完整的 Email 地址',
+      '只輸入學號',
+      '學號加上姓名',
+      '班級和座號',
+    ],
+    correctAnswer: 0,
+    explanation: '登入時需要輸入完整的 Email 地址（學號@mail2.smes.tyc.edu.tw）作為帳號。',
+  },
+  {
+    id: 'q8',
+    question: 'Email 地址可以包含空格嗎？',
+    options: [
+      '可以',
+      '不可以',
+      '只有在學號部分可以',
+      '只有在網域部分可以',
+    ],
+    correctAnswer: 1,
+    explanation: 'Email 地址不能包含空格，必須是連續的字符串。',
+  },
+  {
+    id: 'q9',
+    question: '學校 Email 主要用途是什麼？',
+    options: [
+      '接收學校通知和作業',
+      '玩遊戲',
+      '購物',
+      '看影片',
+    ],
+    correctAnswer: 0,
+    explanation: '學校 Email 主要用於接收學校的重要通知、作業、活動資訊等教育相關內容。',
+  },
+  {
+    id: 'q10',
+    question: '如果忘記 Email 密碼該怎麼辦？',
+    options: [
+      '重新申請一個新的 Email',
+      '聯絡老師或資訊組協助重設',
+      '放棄使用',
+      '猜測可能的密碼',
+    ],
+    correctAnswer: 1,
+    explanation: '忘記密碼時，應該聯絡老師或學校資訊組，他們會協助你安全地重設密碼。',
+  },
+];
+
+export const PASSWORD_TIPS: PasswordTip[] = [
+  {
+    id: 'tip1',
+    title: '使用混合字符',
+    description: '結合大小寫字母、數字和特殊符號',
+    example: 'Smes@2026!',
+    strength: 'strong',
+  },
+  {
+    id: 'tip2',
+    title: '避免個人資訊',
+    description: '不要使用生日、電話號碼等容易被猜到的資訊',
+    example: '不要用：20100101',
+    strength: 'weak',
+  },
+  {
+    id: 'tip3',
+    title: '創造記憶口訣',
+    description: '用一句話的首字母組成密碼',
+    example: '我愛上學每一天 → Wasxmyt2026',
+    strength: 'strong',
+  },
+  {
+    id: 'tip4',
+    title: '使用足夠長度',
+    description: '密碼至少要有 8 個字符，12 個以上更安全',
+    example: 'MySchool2026!',
+    strength: 'strong',
+  },
+  {
+    id: 'tip5',
+    title: '避免常見密碼',
+    description: '不要使用 123456、password 等常見密碼',
+    example: '不要用：123456',
+    strength: 'weak',
+  },
+  {
+    id: 'tip6',
+    title: '定期更換密碼',
+    description: '建議每 3-6 個月更換一次密碼',
+    example: '設定提醒定期更新',
+    strength: 'medium',
+  },
+  {
+    id: 'tip7',
+    title: '使用密碼變化',
+    description: '在學校密碼基礎上加入個人元素',
+    example: '學校密碼 → 加上個人特色',
+    strength: 'medium',
+  },
+  {
+    id: 'tip8',
+    title: '不要重複使用',
+    description: '不同網站使用不同的密碼',
+    example: '學校 Email 專用密碼',
+    strength: 'strong',
+  },
+  {
+    id: 'tip9',
+    title: '使用數字替換',
+    description: '用數字替換相似的字母',
+    example: 'School → Sch00l',
+    strength: 'medium',
+  },
+  {
+    id: 'tip10',
+    title: '加入特殊符號',
+    description: '在密碼中加入 !@#$%^&* 等符號',
+    example: 'Smes@1234!',
+    strength: 'strong',
+  },
+];
+
+export const LEARNING_MODULES = [
+  {
+    id: 'email-learning',
+    title: 'Email 學習',
+    description: '學習學校 Email 地址的組成和使用方法',
+    icon: '📧',
+    color: 'from-blue-500 to-cyan-500',
+    route: '/email-learning',
+    estimatedTime: '15 分鐘',
+  },
+  {
+    id: 'student-id-game',
+    title: '學號記憶遊戲',
+    description: '透過有趣的遊戲記住你的學號',
+    icon: '🎓',
+    color: 'from-purple-500 to-pink-500',
+    route: '/student-id-game',
+    estimatedTime: '10 分鐘',
+  },
+  {
+    id: 'password-security',
+    title: '密碼安全',
+    description: '學習如何創建安全又好記的密碼',
+    icon: '🔐',
+    color: 'from-green-500 to-emerald-500',
+    route: '/password-security',
+    estimatedTime: '20 分鐘',
+  },
+];
+
+export const DIFFICULTY_COLORS = {
+  easy: 'text-green-600 bg-green-100',
+  medium: 'text-yellow-600 bg-yellow-100',
+  hard: 'text-red-600 bg-red-100',
+} as const;
+
+export const DIFFICULTY_LABELS = {
+  easy: '簡單',
+  medium: '中等',
+  hard: '困難',
+} as const;
+
+export const STRENGTH_COLORS = {
+  weak: 'text-red-600 bg-red-100',
+  medium: 'text-yellow-600 bg-yellow-100',
+  strong: 'text-green-600 bg-green-100',
+} as const;
+
+export const STRENGTH_LABELS = {
+  weak: '弱',
+  medium: '中',
+  strong: '強',
+} as const;
+
+export const SHOP_ITEMS: ShopItem[] = [
+  {
+    id: 'frame-neon',
+    title: '霓虹電光框',
+    description: '散發著動態霓虹光芒的頭像框',
+    price: 300,
+    category: 'avatarFrame',
+    preview: 'border-cyan-400 shadow-[0_0_10px_#22d3ee]',
+    value: 'neon-frame',
+  },
+  {
+    id: 'frame-gold',
+    title: '黃金榮耀框',
+    description: '象徵最高榮譽的金屬質感邊框',
+    price: 500,
+    category: 'avatarFrame',
+    preview: 'border-yellow-400 shadow-[0_0_10px_#facc15]',
+    value: 'gold-frame',
+  },
+  {
+    id: 'frame-matrix',
+    title: '矩陣代碼框',
+    description: '綠色代碼流動的極品邊框',
+    price: 800,
+    category: 'avatarFrame',
+    preview: 'border-green-500 shadow-[0_0_10px_#22c55e]',
+    value: 'matrix-frame',
+  },
+  {
+    id: 'color-cyan',
+    title: '青空之藍',
+    description: '讓你的學號變成亮麗的青藍色',
+    price: 150,
+    category: 'nameColor',
+    preview: 'text-cyan-400',
+    value: '#22d3ee',
+  },
+  {
+    id: 'color-purple',
+    title: '幻紫星雲',
+    description: '讓你的學號變成迷幻的紫色',
+    price: 150,
+    category: 'nameColor',
+    preview: 'text-purple-400',
+    value: '#c084fc',
+  },
+  {
+    id: 'color-flame',
+    title: '烈焰之紅',
+    description: '讓你的學號充滿火焰般的熱情',
+    price: 200,
+    category: 'nameColor',
+    preview: 'text-orange-500',
+    value: '#f97316',
+  },
+];
