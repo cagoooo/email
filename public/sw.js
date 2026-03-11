@@ -1,9 +1,9 @@
 // Service Worker for PWA offline support
 // 石門國小 Email 學習遊戲 - 離線支援
 
-const CACHE_NAME = 'smes-email-game-v1.0.1';
-const STATIC_CACHE = 'smes-static-v1.0.1';
-const DYNAMIC_CACHE = 'smes-dynamic-v1.0.1';
+const CACHE_NAME = 'smes-email-game-v1.0.2';
+const STATIC_CACHE = 'smes-static-v1.0.2';
+const DYNAMIC_CACHE = 'smes-dynamic-v1.0.2';
 
 // 需要緩存的靜態資源
 const STATIC_ASSETS = [
@@ -64,6 +64,12 @@ self.addEventListener('fetch', (event) => {
 
   // 1. 處理導航請求 (網路優先)
   if (request.mode === 'navigate') {
+    // ⚠️ OAuth 回傳頁面（含 access_token）：直接透傳給瀏覽器，不由 SW 攔截
+    // 原因：Hash fragment (#access_token=...) 是瀏覽器端路由，SW fetch 會失敗
+    if (request.url.includes('access_token=') || request.url.includes('refresh_token=')) {
+      return; // 讓瀏覽器原生處理
+    }
+
     event.respondWith(
       fetch(request)
         .then((response) => {
@@ -71,10 +77,17 @@ self.addEventListener('fetch', (event) => {
           caches.open(DYNAMIC_CACHE).then((cache) => cache.put(request, responseClone));
           return response;
         })
-        .catch(() => caches.match(request) || caches.match('./offline.html'))
+        .catch(async () => {
+          const cached = await caches.match(request);
+          if (cached) return cached;
+          const offline = await caches.match('./offline.html');
+          // 確保一定返回有效 Response，絕不返回 undefined
+          return offline || new Response('Offline', { status: 503, headers: { 'Content-Type': 'text/plain' } });
+        })
     );
     return;
   }
+
 
   // 2. 處理 API 與 Supabase 請求 (網路優先)
   if (url.pathname.startsWith('/api/') || url.hostname.includes('supabase')) {
