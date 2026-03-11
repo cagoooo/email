@@ -30,7 +30,7 @@ export function Layout({ children }: LayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement>(null);
-  const { progress, studentInfo } = useGameProgress();
+  const { progress, studentInfo, setStudentInfo } = useGameProgress();
   const { profile, user, signOut } = useAuth();
 
   // 點外部關閉帳號選單
@@ -136,9 +136,9 @@ export function Layout({ children }: LayoutProps) {
                       <button
                         onClick={() => setIsAccountMenuOpen(!isAccountMenuOpen)}
                         className={`w-10 h-10 rounded-xl overflow-hidden border-2 flex items-center justify-center bg-muted/50 transition-all hover:scale-105 focus:outline-none ${progress?.customization?.avatarFrame === 'neon-frame' ? 'border-cyan-400 shadow-[0_0_10px_#22d3ee]'
-                            : progress?.customization?.avatarFrame === 'gold-frame' ? 'border-yellow-400 shadow-[0_0_10px_#facc15]'
-                              : progress?.customization?.avatarFrame === 'matrix-frame' ? 'border-green-500 shadow-[0_0_10px_#22c55e]'
-                                : 'border-border hover:border-primary/50'
+                          : progress?.customization?.avatarFrame === 'gold-frame' ? 'border-yellow-400 shadow-[0_0_10px_#facc15]'
+                            : progress?.customization?.avatarFrame === 'matrix-frame' ? 'border-green-500 shadow-[0_0_10px_#22c55e]'
+                              : 'border-border hover:border-primary/50'
                           }`}
                         title="帳號選單"
                       >
@@ -192,7 +192,11 @@ export function Layout({ children }: LayoutProps) {
                             </div>
                             <div className="p-2">
                               <button
-                                onClick={async () => { await signOut(); setIsAccountMenuOpen(false); }}
+                                onClick={async () => {
+                                  setStudentInfo(null);
+                                  await signOut();
+                                  setIsAccountMenuOpen(false);
+                                }}
                                 className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-destructive hover:bg-destructive/10 transition-colors"
                               >
                                 <LogOut className="w-4 h-4" />
