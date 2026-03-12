@@ -241,28 +241,6 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       rollupOptions: {
-        output: {
-          manualChunks(id) {
-            if (id.includes('node_modules')) {
-              if (id.includes('/node_modules/react/') || id.includes('/node_modules/react-dom/') || id.includes('/node_modules/react-router')) {
-                return 'vendor-react';
-              }
-              if (id.includes('@supabase/')) {
-                return 'vendor-supabase';
-              }
-              if (id.includes('framer-motion')) {
-                return 'vendor-motion';
-              }
-              if (id.includes('recharts')) {
-                return 'vendor-recharts';
-              }
-              if (id.includes('@radix-ui/') || id.includes('lucide-react')) {
-                return 'vendor-ui';
-              }
-              return 'vendor'; // 其餘第三方套件打包在一起
-            }
-          }
-        }
       }
     },
   }
