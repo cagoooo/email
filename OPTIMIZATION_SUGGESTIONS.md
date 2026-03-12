@@ -1,332 +1,95 @@
-# 🚀 石門國小電子郵件學習平台 — 後續優化改良建議
+# 🚀 石門國小電子郵件學習平台 — 開發藍圖與未來優化建議
 
-> 分析日期：2026-03-11 ｜ 依優先順序與複雜度排列
-
----
-
-## 📋 優化項目總覽
-
-| 類別 | 項目數 | 預估工時 |
-|------|--------|----------|
-| 🔴 高優先（安全 / 穩定性）| 5 項 | 1-2 天 |
-| 🟡 中優先（功能完整性）| 8 項 | 3-7 天 |
-| 🟢 長期規劃（體驗升級）| 7 項 | 2-4 週 |
+> 更新日期：2026-03-12 ｜ 綜合專案現況與未來發展之完整評估表
 
 ---
 
-## 🔴 高優先級（建議立即處理）
+## ✅ 【階段一】近期已達成里程碑 (Completed)
 
-### 1. 🔐 部署前敏感資訊清除
+在最近幾次的迭代中，平台已經完成了許多關鍵的基礎設施與視覺升級：
 
-**問題**：`.env` 的 Supabase Anon Key 和 Google OAuth Secret 若不慎洩漏，將造成安全風險。
-
-**解決方案**：
-```bash
-# 驗證目前是否有任何 Key 殘留在非 .env 的檔案中
-python -c "
-import os, re
-pattern = re.compile(r'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9')
-found = []
-for root, dirs, files in os.walk('.'):
-    dirs[:] = [d for d in dirs if d not in ['.git','node_modules','dist']]
-    for fname in files:
-        if fname.endswith(('.html','.js','.ts','.tsx','.json','.md')):
-            with open(os.path.join(root,fname), encoding='utf-8', errors='ignore') as f:
-                for i, line in enumerate(f, 1):
-                    if pattern.search(line):
-                        found.append(f'{root}/{fname}:{i}')
-print('⚠️ 發現洩漏：' if found else '✅ 無殘留 Key')
-for x in found: print(' ', x)
-"
-```
-
-**預防措施**：建立 `.env.example` 作為樣板，確保協作者知道需要設定哪些變數。
+1. **視覺介面與 RWD 響應式優化**：
+   - 首頁 Hero 區塊、跑馬燈與 AI 建議區塊的留白（Padding/Margin）優化，版面更加緊湊洗鍊。
+   - Header 導覽列在手機與平板端（窄螢幕）加入帳號長度截斷（`truncate`）機制，徹底解決 RWD 破版問題。
+   - 強化 Google OAuth 登入按鈕的互動體驗，新增 Loading 動畫層與狀態文字（最高等待 1000ms 的防卡死機制）。
+2. **PWA 與快取機制（Service Worker）穩定化**：
+   - 修復開發環境（`localhost`）下的 SW 攔截問題，確保 Vite HMR（熱更新）不報錯。
+   - 確保正式站點發布後，客戶端能順暢取得最新網頁資源。
+3. **安全防護與自動化部署 (CI/CD)**：
+   - 建立並完善 GitHub Actions 工作流，實現 Push 後全自動部署至 GitHub Pages。
+   - 導入安全鐵律：以 `__PLACEHOLDER__` 機制注入環境變數，並於 Push 前執行 API Key 殘留掃描腳本，確保儲存庫零機密洩漏。
+4. **管理權限修復**：修復了管理端與 Firebase 的白名單讀取權限問題。
 
 ---
 
-### 2. 🏗️ 新增 GitHub Actions CI/CD 工作流
+## 🏃 【階段二】近期可執行的關鍵優化 (1-2 週內)
 
-**問題**：目前缺少自動化部署流程，需要手動執行 `npm run build`。
+這部分主要針對系統效能、程式碼體質以及基本的使用者體驗補強。
 
-**建議建立** `.github/workflows/deploy.yml`：
+### 1. ⚡ 網頁加載速度與 Bundle 瘦身 (效能優化)
+*   **現狀**：引入了大量的 UI 組件 (shadcn-ui)、動畫 (framer-motion) 與圖表庫 (recharts)，全部打包在一起可能導致首次開啟較慢。
+*   **具體作法**：
+    *   在 `vite.config.ts` 中啟用 `manualChunks`，將 `react`、`framer-motion` 等大型套件拆分成獨立的 `.js` 檔案。
+    *   針對目前少用的路由（例如 Admin 或 Parent Dashboard）實作 **React.lazy** 動態載入。
 
-```yaml
-name: 🚀 部署到 GitHub Pages
-on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
+### 2. 🧩 完善空殼頁面的元件拆分
+*   **現狀**：目前像 `Leaderboard.tsx`、`TeacherDashboard.tsx` 只有簡單的 Wrapper，主要邏輯都塞在其對應的 Components 中。
+*   **具體作法**：由各個 Page 作為 Container Component 負責打 API (Supabase) 獲取資料，再將資料作為 props 傳遞給 Presentational Component 負責渲染，落實職責分離。
 
-permissions:
-  contents: write
-
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: ✅ 取出程式碼
-        uses: actions/checkout@v4
-
-      - name: 📦 設定 Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: 📥 安裝依賴
-        run: npm ci
-
-      - name: 🔍 執行 Lint 檢查
-        run: npm run lint
-
-      - name: 🏗️ 建置專案
-        run: npm run build
-        env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
-
-      - name: 🚀 部署到 GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
-```
+### 3. 🌓 深色模式 (Dark Mode) 切換按鈕
+*   **現狀**：系統已安裝 `next-themes` 且 UI 底層支援 Dark Mode，但使用者無從切換。
+*   **具體作法**：在 Header 右上角頭像旁邊加入一個精緻的日月切換 Switch，讓平台在夜間使用更不傷眼，並記憶於 `localStorage`。
 
 ---
 
-### 3. 📱 修復 PWA Manifest Icon 路徑
+## 🚀 【階段三】核心功能與遊戲化深度擴充 (未來 1-2 個月)
 
-**問題**：`manifest.json` 中的圖示路徑若與 Vite 打包路徑不符，會導致 PWA 安裝失敗。
+這是能大幅提昇學生「學習動機與黏著度」的關鍵功能藍圖。
 
-**建議**：確認 `manifest.json` 的圖示路徑與 `public/` 下的實際檔名吻合。
+### 4. 🤖 升級 AI 學習助理 (串接真實 Gemini)
+*   **概念**：目前的 AI 建議是前端靜態判斷的。可升級為呼叫真正的 AI 生成個人化鼓勵與建議。
+*   **推薦作法**：
+    *   在 Firebase Functions 或 Supabase Edge Functions 建立一支 API，避免前端暴露 API Key。
+    *   將學生的現有進度、答錯的題目送給 `gemini-2.5-flash-lite` 模型。
+    *   AI 會以「遊樂園導覽員」的語氣，親切回覆學生：「哇！你快要達成 Email 大師了！只要再將密碼強度提升，就能獲得終極獎勵唷！」
 
-```json
-// public/manifest.json
-{
-  "name": "石門國小電子郵件學習平台",
-  "short_name": "石門Email學習",
-  "icons": [
-    { "src": "/favicon.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/favicon.png", "sizes": "512x512", "type": "image/png" }
-  ],
-  "theme_color": "#6366f1",
-  "background_color": "#0f172a",
-  "display": "standalone",
-  "start_url": "./"
-}
-```
+### 5. 🏫 班級競賽與即時排行榜 (Supabase Realtime)
+*   **概念**：目前的遊戲偏向單人打怪。加上「社交與競爭」元素能大幅提升熱度。
+*   **推薦作法**：
+    *   教務處或資訊老師可以發起「限時班級對抗賽」。
+    *   啟用 Supabase Realtime 功能，當 A 班學生答題獲得 10 分，大螢幕上的長條圖就會**即時上升**，創造有如運動會般的刺激感。
 
----
+### 6. ⚔️ 多人連線 PK 模式 (1 對 1 Email 知識問答)
+*   **概念**：讓學生之間可以對戰。
+*   **推薦作法**：
+    *   類似「Kahoot!」或「Quizlet Live」的縮小版。兩人配對後，同時回答 5 題 Email 或資安題，比速度與正確率。
+    *   贏家可奪取對方少量的點數，或是獲得特殊的「PK 勝利星星」。
 
-### 4. ⚡ 補全「空殼」頁面的實作
+### 7. 🎁 商城系統 (Shop) 的獎勵擴充
+*   **概念**：有了點數就需要有地方花費，增加收集誘因。
+*   **推薦作法**：
+    *   除了頭像框與名字顏色，可以新增**「平台背景主題」**（例如：賽博龐克風、童話森林風），只要花 1000 點就能永久解鎖並套用在全站背景。
+    *   甚至可以加入「網頁滑鼠游標特效」（例如拖曳時會有星星軌跡）。
 
-**問題**：`Leaderboard.tsx`、`TeacherDashboard.tsx`、`ParentDashboard.tsx` 在 `pages/` 目錄下的檔案幾乎是空殼（僅 255-260 bytes），真正的邏輯放在 `components/` 裡的同名元件，但路由頁面只有 import 而沒有 Props 傳遞。
-
-**建議**：統一由路由頁面透過 Hooks 取得資料後，以 Props 傳入 Component，降低耦合度。
-
----
-
-### 5. 🌐 Supabase Google OAuth Redirect URL 設定
-
-**問題**：使用 HashRouter，OAuth 回傳時可能因 `#` 符號導致 Redirect URL 不符。
-
-**步驟**：
-1. 至 **Supabase Dashboard → Authentication → URL Configuration**
-2. 在 **Redirect URLs** 加入：
-   - `http://localhost:8080`
-   - `https://[你的帳號].github.io/[你的 repo 名稱]`
+### 8. 🧾 教師/管理端：學習成效自動匯出 (PDF/Excel)
+*   **概念**：減輕老師負擔，讓數據可視化成為實體報告。
+*   **推薦作法**：
+    *   在 `TeacherDashboard` 加入報表功能。
+    *   使用 `xlsx` 或 `@react-pdf/renderer` 套件，老師一鍵點擊就能將「全班 Email 學習達成率」匯出列印，直接交給學校做資訊教育成果驗收。
 
 ---
 
-## 🟡 中優先級（1 週內建議完成）
+## 🛡️ 【階段四】長期架構與資訊安全演進
 
-### 6. 📦 優化 Bundle 大小
+### 9. 🚷 嚴格防作弊機制 (Anti-Cheat Server-side Validation)
+*   **現狀**：目前送出分數或成就可能較依賴前端計算。
+*   **建議作法**：將點數發放與成就驗證的邏輯移至後端（Edge Functions）。前端只送出「答對了哪一題與耗時」，後端驗證是否合理後才發放對應積分，防止高年級學生透過修改瀏覽器 Console 篡改點數。
 
-**問題**：目前依賴了大量 Radix UI 元件（49 個），可能導致初次載入緩慢。
-
-**建議**：
-- 在 `vite.config.ts` 啟用 `rollupOptions.output.manualChunks` 依功能分割 chunk
-- 考慮使用動態 `import()` 對非初始頁面做懶載入
-
-```typescript
-// vite.config.ts 新增
-build: {
-  rollupOptions: {
-    output: {
-      manualChunks: {
-        'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-        'vendor-supabase': ['@supabase/supabase-js'],
-        'vendor-ui': ['@radix-ui/react-dialog', '@radix-ui/react-select'],
-        'vendor-charts': ['recharts'],
-        'vendor-motion': ['framer-motion'],
-      },
-    },
-  },
-},
-```
+### 10. 📝 教師題庫後台 (動態擴充內容)
+*   **現狀**：目前的題目與關卡可能寫死在 `src/data/index.ts` 中。
+*   **建議作法**：
+    *   建立後台系統，讓老師可以自己新增「反詐騙知識」、「網路霸凌防範」等新關卡。
+    *   存入 Supabase，前端遊戲介面只需撈取最新題目，實現平台永續使用的可能。
 
 ---
-
-### 7. 🧪 新增單元測試與整合測試
-
-**問題**：目前缺乏自動化測試，僅有 Supabase Edge Functions 的 Deno 測試。
-
-**建議**：
-- 安裝 Vitest + React Testing Library
-- 針對 `src/lib/index.ts` 中的工具函數（`validateStudentId`、`calculatePasswordStrength`）撰寫單元測試
-- 針對 `useAuth` 撰寫 Mock 測試
-
-```bash
-npm install -D vitest @testing-library/react @testing-library/jest-dom
-```
-
----
-
-### 8. 🎨 新增深色/淺色主題切換
-
-**問題**：目前雖安裝了 `next-themes`，但尚未確認是否有用戶可見的主題切換按鈕。
-
-**建議**：在 `Layout.tsx` 導覽列右上角新增主題切換按鈕，提升使用者體驗。
-
----
-
-### 9. 📊 完善學習分析資料持久化
-
-**問題**：`useLearningAnalytics.ts` 的資料可能仍以 localStorage 儲存，無法跨裝置同步。
-
-**建議**：將學習分析資料遷移至 Supabase 資料表，透過 `useCloudSync.ts` 同步。
-
----
-
-### 10. 🌍 多語言支援（i18n）
-
-**問題**：目前所有文字硬編碼於元件中，難以維護。
-
-**建議**：安裝 `react-i18next`，將所有 UI 文字抽離至語言檔案。
-
-```bash
-npm install react-i18next i18next
-```
-
----
-
-### 11. ♿ 無障礙設計（Accessibility）強化
-
-**建議清單**：
-- 確認所有互動元素有 `aria-label`
-- 確認顏色對比度符合 WCAG AA 標準（4.5:1 以上）
-- 為圖示按鈕新增 `title` 屬性
-- 鍵盤導覽支援（Tab 順序）
-
----
-
-### 12. 📲 行動端互動優化
-
-**建議**：
-- 遊戲頁面新增觸控手勢支援（滑動切換題目）
-- 增大所有點擊目標至 44×44px（符合 Apple HIG 規範）
-- 數字輸入欄位在手機上自動開啟數字鍵盤（`inputMode="numeric"`）
-
----
-
-### 13. ⏱️ 新增「每日一題」電子報功能
-
-**概念**：透過 Supabase Edge Function + Resend/MailGun 實作每日自動發送學習題目、進度摘要至家長 Email。
-
----
-
-## 🟢 長期規劃（未來 2-4 週）
-
-### 14. 🤖 整合 Gemini AI 即時提示
-
-**概念**：目前的 `useAITips.ts` 提示系統為靜態邏輯，可升級為呼叫 Gemini API 生成個人化學習建議。
-
-**技術方案**：
-- 建立 Supabase Edge Function 作為 AI Proxy（避免前端暴露 API Key）
-- 使用 `gemini-2.5-flash-lite` 模型
-
-```typescript
-// supabase/edge_function/ai-tips/index.ts（建議實作）
-const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent', {
-  headers: { 'Authorization': `Bearer ${Deno.env.get('GEMINI_API_KEY')}` },
-  body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-});
-```
-
----
-
-### 15. 🏆 班級競賽模式
-
-**概念**：教師可發起限時班級競賽，全班同時作答，即時更新排行榜（Supabase Realtime）。
-
-**技術方案**：
-- 建立 `competitions_20260310` 資料表
-- 使用 Supabase Realtime Channel 廣播分數更新
-- 競賽結束後自動發放獎勵點數
-
----
-
-### 16. 📚 教學影片整合
-
-**概念**：在各學習頁面嵌入教學影片（YouTube Embed 或自架影片），搭配字幕與章節標記。
-
----
-
-### 17. 🎮 遊戲化升級：連線多人對戰
-
-**概念**：允許兩位學生即時 PK Email 知識測驗，增加競技樂趣。
-
-**技術方案**：使用 Supabase Realtime Presence/Broadcast 實作即時對戰狀態同步。
-
----
-
-### 18. 📋 教師出題系統
-
-**概念**：提供教師端介面，讓老師自行新增/編輯 Email 測驗題目，存入 Supabase，不需要修改原始碼。
-
----
-
-### 19. 💾 學習歷程匯出（PDF）
-
-**概念**：教師端可一鍵匯出班級學習報告為 PDF，用於家長日或教學評量。
-
-**建議套件**：`@react-pdf/renderer`
-
----
-
-### 20. 🔔 推播通知（Web Push）
-
-**概念**：透過 `public/sw.js` Service Worker 對已安裝的 PWA 用戶發送學習提醒推播。
-
----
-
-## 📈 效能優化建議
-
-| 項目 | 目前狀態 | 建議目標 |
-|------|----------|----------|
-| First Contentful Paint | 未測量 | < 1.5s |
-| Largest Contentful Paint | 未測量 | < 2.5s |
-| Bundle 主 chunk | 未測量 | < 200KB gzip |
-| Lighthouse 效能分數 | 未測量 | ≥ 90 分 |
-
-**立即可施作的優化**：
-- 圖片使用 WebP 格式並設定正確的 `width/height` 屬性（避免 CLS）
-- 字體使用 `font-display: swap`
-- 移除未使用的 Radix UI 元件
-
----
-
-## 🔒 安全性強化建議
-
-| 項目 | 建議 |
-|------|------|
-| Supabase RLS | 確認所有資料表均已啟用 RLS，沒有 `GRANT ALL` 的 Public 政策 |
-| API Key 限制 | 在 GCP Console 限制 Google OAuth Client ID 的允許來源網址 |
-| CORS 設定 | Supabase Edge Functions 加入 Origin 白名單驗證 |
-| 率限制 | 在登入頁面加入輸入防抖（500ms）避免暴力破解 |
-| 錯誤訊息 | 登入失敗時不要透露是「帳號錯誤」還是「密碼錯誤」（統一顯示「帳號或密碼錯誤」）|
-
----
-
-*本文件由 Antigravity AI 分析產生，建議定期（每月）回顧並更新優先順序。*
+*文件編撰：Antigravity (AI 助手) ｜ 隨時可針對上述任一項目展開實作！*
