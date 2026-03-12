@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   Users,
@@ -21,70 +21,21 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useAuth } from '@/hooks/useAuth';
-import { useLeaderboard, LeaderboardEntry } from '@/hooks/useLeaderboard';
 import { springPresets, staggerContainer, staggerItem } from '@/lib/motion';
+import type { StudentDetail, ClassStats } from '@/pages/TeacherDashboard';
 
-interface StudentDetail extends LeaderboardEntry {
-  email?: string;
-  parent_email?: string;
-  last_login?: string;
-  completion_rate?: number;
+interface TeacherDashboardProps {
+  profile: any;
+  loading: boolean;
+  students: StudentDetail[];
+  classStats: ClassStats | null;
+  onRefresh: () => void;
 }
 
-interface ClassStats {
-  totalStudents: number;
-  activeToday: number;
-  averageProgress: number;
-  totalChallengesCompleted: number;
-  averageStudyTime: number;
-}
-
-export function TeacherDashboard() {
-  const { profile } = useAuth();
-  const { leaderboard, stats, loading, fetchLeaderboard, getClassActivitySummary } = useLeaderboard();
-  const [students, setStudents] = useState<StudentDetail[]>([]);
-  const [classStats, setClassStats] = useState<ClassStats | null>(null);
+export function TeacherDashboard({ profile, students, classStats, loading, onRefresh }: TeacherDashboardProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStudent, setSelectedStudent] = useState<StudentDetail | null>(null);
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all');
-
-  useEffect(() => {
-    if (profile?.role === 'teacher' && profile.class_id) {
-      loadDashboardData();
-    }
-  }, [profile]);
-
-  const loadDashboardData = async () => {
-    if (!profile?.class_id) return;
-
-    // 獲取排行榜數據
-    const leaderboardData = await fetchLeaderboard(profile.class_id);
-
-    // 轉換為學生詳情格式
-    const studentDetails: StudentDetail[] = leaderboardData.map((entry: LeaderboardEntry) => ({
-      ...entry,
-      email: `${entry.student_id}@mail2.smes.tyc.edu.tw`,
-      completion_rate: Math.round(
-        ((entry.total_score || 0) / 1000) * 100 // 假設滿分1000
-      ),
-    }));
-
-    setStudents(studentDetails);
-
-    // 獲取班級活動摘要
-    const activitySummary = await getClassActivitySummary(profile.class_id);
-
-    if (stats && activitySummary) {
-      setClassStats({
-        totalStudents: stats.totalStudents,
-        activeToday: activitySummary.todayActiveStudents,
-        averageProgress: Math.round((stats.averageScore / 1000) * 100),
-        totalChallengesCompleted: activitySummary.weekChallengesCompleted,
-        averageStudyTime: Math.round(stats.totalStudyTime / stats.totalStudents),
-      });
-    }
-  };
 
   const filteredStudents = students.filter(student => {
     const matchesSearch = student.display_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -140,7 +91,7 @@ export function TeacherDashboard() {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={loadDashboardData}>
+            <Button variant="outline" onClick={onRefresh}>
               <BarChart3 className="w-4 h-4 mr-2" />
               重新整理
             </Button>

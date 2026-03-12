@@ -104,7 +104,7 @@ function cdnPrefixImages(): Plugin {
         }
       },
 
-      StringLiteral(path) {
+      StringLiteral(path: any) {
         // skip object keys: { "image": "..." }
         if (t.isObjectProperty(path.parent) && path.parentKey === 'key' && !path.parent.computed) return;
         // skip import/export sources
@@ -117,7 +117,7 @@ function cdnPrefixImages(): Plugin {
         if (after !== before) { path.node.value = after; rewrites++; }
       },
 
-      TemplateLiteral(path) {
+      TemplateLiteral(path: any) {
         // handle `"/images/foo.png"` as template with NO expressions
         if (path.node.expressions.length) return;
         const raw = path.node.quasis.map(q => q.value.cooked ?? q.value.raw).join('');
@@ -238,6 +238,32 @@ export default defineConfig(({ mode }) => {
           ? process.env.VITE_ENABLE_ROUTE_MESSAGING === 'true'
           : process.env.VITE_ENABLE_ROUTE_MESSAGING !== 'false'
       ),
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('/node_modules/react/') || id.includes('/node_modules/react-dom/') || id.includes('/node_modules/react-router')) {
+                return 'vendor-react';
+              }
+              if (id.includes('@supabase/')) {
+                return 'vendor-supabase';
+              }
+              if (id.includes('framer-motion')) {
+                return 'vendor-motion';
+              }
+              if (id.includes('recharts')) {
+                return 'vendor-recharts';
+              }
+              if (id.includes('@radix-ui/') || id.includes('lucide-react')) {
+                return 'vendor-ui';
+              }
+              return 'vendor'; // 其餘第三方套件打包在一起
+            }
+          }
+        }
+      }
     },
   }
 });

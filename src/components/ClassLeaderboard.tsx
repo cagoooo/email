@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Trophy, 
-  Medal, 
-  Crown, 
-  Flame, 
-  Clock, 
+import {
+  Trophy,
+  Medal,
+  Crown,
+  Flame,
+  Clock,
   TrendingUp,
   Users,
   Star,
@@ -94,14 +94,14 @@ function RankingCard({ entry, rank, type, isCurrentUser = false }: RankingCardPr
         {rank <= 3 && (
           <div className={`absolute inset-0 bg-gradient-to-r ${getRankColor(rank)} opacity-10`} />
         )}
-        
+
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="flex-shrink-0">
                 {getRankIcon(rank)}
               </div>
-              
+
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <h3 className="font-semibold text-sm">
@@ -145,51 +145,18 @@ function RankingCard({ entry, rank, type, isCurrentUser = false }: RankingCardPr
   );
 }
 
-export function ClassLeaderboard() {
-  const { user, profile } = useAuth();
-  const { 
-    leaderboard, 
-    stats, 
-    currentUserRank, 
-    loading, 
-    fetchLeaderboard,
-    fetchWeeklyLeaderboard,
-    fetchStudyTimeLeaderboard,
-    fetchStreakLeaderboard 
-  } = useLeaderboard();
-  
-  const [activeTab, setActiveTab] = useState<'score' | 'streak' | 'time' | 'weekly'>('score');
-  const [displayData, setDisplayData] = useState<LeaderboardEntry[]>([]);
+interface ClassLeaderboardProps {
+  user: any;
+  profile: any;
+  stats: any;
+  currentUserRank: any;
+  loading: boolean;
+  activeTab: 'score' | 'streak' | 'time' | 'weekly';
+  setActiveTab: (tab: 'score' | 'streak' | 'time' | 'weekly') => void;
+  displayData: LeaderboardEntry[];
+}
 
-  useEffect(() => {
-    if (profile?.role === 'student' && profile.class_id) {
-      loadLeaderboardData();
-    }
-  }, [profile, activeTab]);
-
-  const loadLeaderboardData = async () => {
-    if (!profile?.class_id) return;
-
-    let data: LeaderboardEntry[] = [];
-    
-    switch (activeTab) {
-      case 'score':
-        data = await fetchLeaderboard(profile.class_id);
-        break;
-      case 'streak':
-        data = await fetchStreakLeaderboard(profile.class_id);
-        break;
-      case 'time':
-        data = await fetchStudyTimeLeaderboard(profile.class_id);
-        break;
-      case 'weekly':
-        data = await fetchWeeklyLeaderboard(profile.class_id);
-        break;
-    }
-    
-    setDisplayData(data);
-  };
-
+export function ClassLeaderboard({ user, profile, stats, currentUserRank, loading, activeTab, setActiveTab, displayData }: ClassLeaderboardProps) {
   const getTabIcon = (tab: string) => {
     switch (tab) {
       case 'score':
@@ -207,7 +174,7 @@ export function ClassLeaderboard() {
 
   const getCurrentUserPosition = () => {
     if (!user || !displayData.length) return null;
-    
+
     const userIndex = displayData.findIndex(entry => entry.user_id === user.id);
     return userIndex >= 0 ? userIndex + 1 : null;
   };

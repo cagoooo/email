@@ -55,8 +55,8 @@ export function DailyChallengeCard({ challenge, streak, onStart, className = '' 
     >
       <Card className="h-full relative overflow-hidden border-2 transition-all duration-200">
         {/* 背景裝飾 */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
-        
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none" />
+
         {/* 完成狀態指示器 */}
         {challenge.completed && (
           <div className="absolute top-4 right-4 z-10">
@@ -85,7 +85,7 @@ export function DailyChallengeCard({ challenge, streak, onStart, className = '' 
               </div>
             </div>
           </div>
-          
+
           <CardDescription className="text-sm mt-2">
             {challenge.description}
           </CardDescription>
@@ -120,7 +120,7 @@ export function DailyChallengeCard({ challenge, streak, onStart, className = '' 
                 )}
               </div>
             ) : (
-              <Button 
+              <Button
                 onClick={onStart}
                 className="w-full group"
                 size="sm"
@@ -164,7 +164,7 @@ export function ChallengeStreak({ streak, totalRewards, className = '' }: Challe
                 </p>
               </div>
             </div>
-            
+
             <div className="text-right">
               <div className="flex items-center gap-1 text-yellow-600">
                 <Star className="w-4 h-4" />
@@ -173,15 +173,15 @@ export function ChallengeStreak({ streak, totalRewards, className = '' }: Challe
               <p className="text-xs text-muted-foreground">總獎勵</p>
             </div>
           </div>
-          
+
           {/* 連勝進度條 */}
           <div className="mt-3">
             <div className="flex justify-between text-xs text-orange-600 mb-1">
               <span>連勝進度</span>
               <span>{streak}/7 天</span>
             </div>
-            <Progress 
-              value={(streak % 7) * (100 / 7)} 
+            <Progress
+              value={(streak % 7) * (100 / 7)}
               className="h-2 bg-orange-100"
             />
             <p className="text-xs text-orange-500 mt-1">
@@ -202,7 +202,7 @@ interface WeeklyChallengeProgressProps {
 export function WeeklyChallengeProgress({ weeklyProgress, className = '' }: WeeklyChallengeProgressProps) {
   const days = ['週一', '週二', '週三', '週四', '週五', '週六', '週日'];
   const today = new Date().getDay();
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -222,10 +222,10 @@ export function WeeklyChallengeProgress({ weeklyProgress, className = '' }: Week
             {days.map((day, index) => {
               const dayIndex = index === 6 ? 0 : index + 1; // 調整週日為 0
               const isToday = dayIndex === today;
-              const isCompleted = weeklyProgress.some(c => 
+              const isCompleted = weeklyProgress.some(c =>
                 new Date(c.date).getDay() === dayIndex && c.completed
               );
-              
+
               return (
                 <motion.div
                   key={day}
@@ -234,10 +234,10 @@ export function WeeklyChallengeProgress({ weeklyProgress, className = '' }: Week
                   transition={{ delay: index * 0.1, ...springPresets.bouncy }}
                   className={`
                     aspect-square rounded-lg flex flex-col items-center justify-center text-xs font-medium
-                    ${isCompleted 
-                      ? 'bg-green-100 text-green-700 border-2 border-green-300' 
-                      : isToday 
-                        ? 'bg-primary/10 text-primary border-2 border-primary/30' 
+                    ${isCompleted
+                      ? 'bg-green-100 text-green-700 border-2 border-green-300'
+                      : isToday
+                        ? 'bg-primary/10 text-primary border-2 border-primary/30'
                         : 'bg-muted text-muted-foreground border-2 border-transparent'
                     }
                   `}
@@ -253,7 +253,7 @@ export function WeeklyChallengeProgress({ weeklyProgress, className = '' }: Week
               );
             })}
           </div>
-          
+
           <div className="mt-4 text-center">
             <p className="text-sm text-muted-foreground">
               本週完成 <span className="font-semibold text-primary">{weeklyProgress.length}</span>/7 個挑戰
