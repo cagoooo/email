@@ -1,20 +1,33 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HashRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { ROUTE_PATHS } from "@/lib/index";
+import { Loader2 } from "lucide-react";
+
+// 核心頁面保持靜態導入，確保首屏速度
 import Home from "@/pages/Home";
-import EmailLearning from "@/pages/EmailLearning";
-import StudentIdGame from "@/pages/StudentIdGame";
-import PasswordSecurity from "@/pages/PasswordSecurity";
-import Achievements from "@/pages/Achievements";
-import LearningAnalytics from "@/pages/LearningAnalytics";
-import Leaderboard from "@/pages/Leaderboard";
-import TeacherDashboard from "@/pages/TeacherDashboard";
-import ParentDashboard from "@/pages/ParentDashboard";
-import Shop from "@/pages/Shop";
+
+// 非核心/管理端頁面改為延遲載入 (Lazy Loading)
+const EmailLearning = lazy(() => import("@/pages/EmailLearning"));
+const StudentIdGame = lazy(() => import("@/pages/StudentIdGame"));
+const PasswordSecurity = lazy(() => import("@/pages/PasswordSecurity"));
+const Achievements = lazy(() => import("@/pages/Achievements"));
+const LearningAnalytics = lazy(() => import("@/pages/LearningAnalytics"));
+const Leaderboard = lazy(() => import("@/pages/Leaderboard"));
+const TeacherDashboard = lazy(() => import("@/pages/TeacherDashboard"));
+const ParentDashboard = lazy(() => import("@/pages/ParentDashboard"));
+const Shop = lazy(() => import("@/pages/Shop"));
+
+// 統一的載入轉場元件
+const PageLoader = () => (
+  <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+    <Loader2 className="w-10 h-10 text-primary animate-spin" />
+    <p className="text-sm font-bold text-muted-foreground animate-pulse">正在載入冒險關卡...</p>
+  </div>
+);
 
 const queryClient = new QueryClient();
 
@@ -67,18 +80,20 @@ const App = () => (
       <Sonner />
       <HashRouter>
         <AuthHandler />
-        <Routes>
-          <Route path={ROUTE_PATHS.HOME} element={<Home />} />
-          <Route path={ROUTE_PATHS.EMAIL_LEARNING} element={<EmailLearning />} />
-          <Route path={ROUTE_PATHS.STUDENT_ID_GAME} element={<StudentIdGame />} />
-          <Route path={ROUTE_PATHS.PASSWORD_SECURITY} element={<PasswordSecurity />} />
-          <Route path={ROUTE_PATHS.LEARNING_ANALYTICS} element={<LearningAnalytics />} />
-          <Route path={ROUTE_PATHS.ACHIEVEMENTS} element={<Achievements />} />
-          <Route path={ROUTE_PATHS.LEADERBOARD} element={<Leaderboard />} />
-          <Route path={ROUTE_PATHS.TEACHER_DASHBOARD} element={<TeacherDashboard />} />
-          <Route path={ROUTE_PATHS.PARENT_DASHBOARD} element={<ParentDashboard />} />
-          <Route path={ROUTE_PATHS.SHOP} element={<Shop />} />
-        </Routes>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path={ROUTE_PATHS.HOME} element={<Home />} />
+            <Route path={ROUTE_PATHS.EMAIL_LEARNING} element={<EmailLearning />} />
+            <Route path={ROUTE_PATHS.STUDENT_ID_GAME} element={<StudentIdGame />} />
+            <Route path={ROUTE_PATHS.PASSWORD_SECURITY} element={<PasswordSecurity />} />
+            <Route path={ROUTE_PATHS.LEARNING_ANALYTICS} element={<LearningAnalytics />} />
+            <Route path={ROUTE_PATHS.ACHIEVEMENTS} element={<Achievements />} />
+            <Route path={ROUTE_PATHS.LEADERBOARD} element={<Leaderboard />} />
+            <Route path={ROUTE_PATHS.TEACHER_DASHBOARD} element={<TeacherDashboard />} />
+            <Route path={ROUTE_PATHS.PARENT_DASHBOARD} element={<ParentDashboard />} />
+            <Route path={ROUTE_PATHS.SHOP} element={<Shop />} />
+          </Routes>
+        </Suspense>
       </HashRouter>
     </TooltipProvider>
   </QueryClientProvider>

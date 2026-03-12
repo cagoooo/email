@@ -158,7 +158,7 @@ export function useLeaderboard() {
         .eq('role', 'student');
 
       const classStudentIds = classStudents?.map(s => s.id) || [];
-      
+
       const { data: todayActive, error: todayError } = await supabase
         .from('learning_progress_20260310')
         .select('user_id')
@@ -190,6 +190,40 @@ export function useLeaderboard() {
       return null;
     }
   };
+
+  // 監聽全站即時動態
+  useEffect(() => {
+    const channel = supabase
+      .channel('public:learning_progress_20260310')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'learning_progress_20260310',
+        },
+        (payload) => {
+          // 當積分增加超過 50 分時轉發為全站廣播事件
+          const oldScore = payload.old.total_score || 0;
+          const newScore = payload.new.total_score || 0;
+
+          if (newScore > oldScore + 5) {
+            window.dispatchEvent(new CustomEvent('live_broadcast', {
+              detail: {
+                student_id: payload.new.student_id || '神秘同學',
+                points: newScore - oldScore,
+                type: 'score_up'
+              }
+            }));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   // 自動獲取排行榜（當用戶登入且有班級時）
   useEffect(() => {

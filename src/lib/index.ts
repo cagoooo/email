@@ -33,6 +33,8 @@ export interface GameProgress {
   customization: {
     avatarFrame?: string;
     nameColor?: string;
+    theme?: string; // 加入背景主題
+    cursor?: string; // 加入游標特效
   }; // 新增：外觀自定義
   ownedItems: string[]; // 新增：已購買物品列表
   lastUpdated: Date;
@@ -77,7 +79,7 @@ export interface ShopItem {
   title: string;
   description: string;
   price: number;
-  category: 'avatarFrame' | 'nameColor';
+  category: 'avatarFrame' | 'nameColor' | 'theme' | 'cursor';
   preview: string; // 預覽顏色或網址
   value: string; // 實際應用的 CSS 值
 }

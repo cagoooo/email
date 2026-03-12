@@ -1,6 +1,6 @@
 # 📧 石門國小電子郵件學習平台 — 完整使用說明手冊
 
-> 版本：v1.0.1 ｜ 更新日期：2026-03-12  
+> 版本：v1.0.3 ｜ 更新日期：2026-03-12  
 > 適用對象：教師、管理員、開發人員
 
 ---
@@ -41,7 +41,7 @@
 | 樣式系統 | Tailwind CSS v4 |
 | 狀態管理 | React Query（伺服器狀態）+ Zustand（本地狀態）|
 | 路由系統 | React Router DOM v6（HashRouter 模式）|
-| 後端服務 | Supabase（資料庫 + 認證 + Edge Functions）|
+| 後端服務 | Supabase（資料庫 + 認證 + 即時廣播 + Edge Functions）|
 | 動畫效果 | Framer Motion |
 | PWA 支援 | 自訂 Service Worker |
 | 圖示庫 | Lucide React + React Icons + Iconify |
@@ -188,6 +188,9 @@ h:\email\
 | 青空之藍 | 150 | 學號顏色 |
 | 幻紫星雲 | 150 | 學號顏色 |
 | 烈焰之紅 | 200 | 學號顏色 |
+| 賽博龐克主題 | 1200 | 背景主題 |
+| 夢幻星空主題 | 1200 | 背景主題 |
+| 魔法足跡游標 | 500 | 游標特效 |
 
 ### 📊 學習分析（LearningAnalytics）— `/learning-analytics`
 - 個人學習報告（總學習時間、連續天數）

@@ -238,8 +238,13 @@ export default function Home() {
                     <Card className="p-8 bg-white/60 backdrop-blur-xl border-white/40 shadow-xl rounded-3xl animate-float w-full max-w-md">
                       <div className="text-center">
                         <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden border-2 border-primary/20">
-                          {profile?.avatar_url ? (
-                            <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                          {(profile?.avatar_url || user?.user_metadata?.avatar_url || user?.user_metadata?.picture) ? (
+                            <img
+                              src={profile?.avatar_url || user?.user_metadata?.avatar_url || user?.user_metadata?.picture}
+                              alt="大頭照"
+                              className="w-full h-full object-cover"
+                              referrerPolicy="no-referrer"
+                            />
                           ) : (
                             <User className="w-10 h-10 text-primary" />
                           )}
@@ -248,9 +253,9 @@ export default function Home() {
                           className="text-2xl font-bold mb-1"
                           style={{ color: progress?.customization?.nameColor }}
                         >
-                          哈囉，{studentInfo.studentId}！
+                          哈囉，{profile?.display_name || user?.user_metadata?.full_name || studentInfo.studentId.split('@')[0]}！
                         </h3>
-                        <p className="text-sm text-muted-foreground mb-4">學號：{studentInfo.studentId}</p>
+                        <p className="text-sm text-muted-foreground mb-4">學號：{studentInfo.studentId.includes('@') ? studentInfo.studentId.split('@')[0] : studentInfo.studentId}</p>
                         <div className="flex items-center gap-2 justify-center text-muted-foreground mt-2">
                           <div className="h-1.5 w-32 bg-secondary rounded-full overflow-hidden">
                             <div

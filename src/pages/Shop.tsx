@@ -31,6 +31,10 @@ const Shop = () => {
             updateCustomization({ avatarFrame: item.value });
         } else if (item.category === 'nameColor') {
             updateCustomization({ nameColor: item.value });
+        } else if (item.category === 'theme') {
+            updateCustomization({ theme: item.value });
+        } else if (item.category === 'cursor') {
+            updateCustomization({ cursor: item.value });
         }
         toast.success(`已裝備 ${item.title}`);
     };
@@ -41,6 +45,12 @@ const Shop = () => {
         }
         if (item.category === 'nameColor') {
             return progress?.customization?.nameColor === item.value;
+        }
+        if (item.category === 'theme') {
+            return progress?.customization?.theme === item.value;
+        }
+        if (item.category === 'cursor') {
+            return progress?.customization?.cursor === item.value;
         }
         return false;
     };
@@ -97,6 +107,14 @@ const Shop = () => {
                                                 style={{ color: item.value }}
                                             >
                                                 樣式預覽
+                                            </div>
+                                        )}
+                                        {item.category === 'theme' && (
+                                            <div className={`absolute inset-0 -m-8 rounded-lg blur-[2px] opacity-50 ${item.preview}`} />
+                                        )}
+                                        {item.category === 'cursor' && (
+                                            <div className="absolute -top-4 -right-4 text-2xl animate-bounce">
+                                                {item.preview}
                                             </div>
                                         )}
                                     </div>

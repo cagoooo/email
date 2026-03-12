@@ -9,6 +9,7 @@ import { IMAGES } from '@/assets/images';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Card } from '@/components/ui/card';
+import { RealtimeBroadcast } from './RealtimeBroadcast';
 import { springPresets } from '@/lib/motion';
 
 interface LayoutProps {
@@ -53,8 +54,35 @@ export function Layout({ children }: LayoutProps) {
     )
     : 0;
 
+  const themeClass = progress?.customization?.theme || '';
+  const cursorType = progress?.customization?.cursor || '';
+
   return (
-    <div className="min-h-screen bg-background relative selection:bg-primary/20 selection:text-primary">
+    <div className={`min-h-screen bg-background font-sans antialiased relative overflow-x-hidden ${themeClass} selection:bg-primary/20 selection:text-primary`}>
+      {/* 全域背景特效 */}
+      {themeClass === 'theme-cyberpunk' && (
+        <div className="fixed inset-0 pointer-events-none z-0">
+          <div className="absolute inset-0 bg-[linear-gradient(to_br,rgba(79,70,229,0.1),rgba(168,85,247,0.1),rgba(236,72,153,0.1))]" />
+          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
+        </div>
+      )}
+      {themeClass === 'theme-deepspace' && (
+        <div className="fixed inset-0 pointer-events-none z-0">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(30,41,59,1)_0%,rgba(2,6,23,1)_100%)]" />
+          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30" />
+        </div>
+      )}
+
+      {/* 即時廣播系統 */}
+      <RealtimeBroadcast />
+
+      {/* 游標特效預留區 (實際開發可加入動態 Canvas) */}
+      {cursorType === 'cursor-magic-trail' && (
+        <style dangerouslySetInnerHTML={{
+          __html: `
+          body { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="%2322d3ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>') 16 16, auto !important; }
+        `}} />
+      )}
       {/* Global Background Decorations */}
       <div className="fixed inset-0 -z-50 overflow-hidden pointer-events-none opacity-40">
         <div className="absolute -top-[10%] -left-[10%] w-[50%] h-[50%] rounded-full bg-primary/5 blur-[120px]" />
@@ -75,12 +103,12 @@ export function Layout({ children }: LayoutProps) {
                 />
               </div>
               <div className="flex flex-col">
-                <span className="text-lg font-bold text-foreground">Email 學習遊樂園</span>
-                <span className="text-xs text-muted-foreground">桃園市石門國小</span>
+                <span className="text-base sm:text-lg font-bold text-foreground leading-tight">Email 學習遊樂園</span>
+                <span className="text-[10px] sm:text-xs text-muted-foreground hidden lg:block">桃園市石門國小</span>
               </div>
             </NavLink>
 
-            <nav className="hidden md:flex items-center gap-1">
+            <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -88,50 +116,53 @@ export function Layout({ children }: LayoutProps) {
                     key={item.path}
                     to={item.path}
                     className={({ isActive }) =>
-                      `flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold transition-all duration-300 relative group ${isActive
-                        ? 'bg-primary text-primary-foreground shadow-[0_0_15px_rgba(var(--primary),0.3)] scale-105'
+                      `flex items-center gap-1.5 xl:gap-2 rounded-lg xl:rounded-xl px-2 xl:px-4 py-2 text-[13px] xl:text-sm font-bold transition-all duration-300 relative group truncate ${isActive
+                        ? 'bg-primary text-primary-foreground shadow-[0_0_15px_rgba(var(--primary),0.3)]'
                         : 'text-muted-foreground hover:bg-primary/10 hover:text-primary hover:scale-105'
                       }`
                     }
                   >
-                    <Icon className="h-4 w-4" />
-                    {item.label}
+                    <Icon className="h-4 w-4 flex-shrink-0" />
+                    <span className="whitespace-nowrap">{item.label}</span>
                   </NavLink>
                 );
               })}
             </nav>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 xl:gap-3">
               {studentInfo && (
-                <div className="hidden lg:flex items-center gap-3">
+                <div className="hidden lg:flex items-center gap-2 xl:gap-3">
                   <NavLink to={ROUTE_PATHS.SHOP}>
-                    <Card className="flex items-center gap-2 px-3 py-2 hover:bg-muted transition-colors cursor-pointer border-primary/20 bg-primary/5">
+                    <Card className="flex items-center gap-1.5 px-2.5 py-1.5 hover:bg-muted transition-colors cursor-pointer border-primary/20 bg-primary/5">
                       <Coins className="w-4 h-4 text-amber-500" />
                       <span className="text-sm font-black text-primary">{progress?.coins || 0}</span>
                     </Card>
                   </NavLink>
 
-                  <Card className="flex items-center gap-3 px-4 py-2 bg-background/40 backdrop-blur-md border-primary/10 hover:border-primary/30 transition-all group">
-                    <div className="flex flex-col max-w-[100px] sm:max-w-[150px]">
-                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-black truncate">Student ID</span>
+                  <Card className="flex items-center gap-2 xl:gap-3 px-3 xl:px-4 py-1.5 xl:py-2 bg-background/40 backdrop-blur-md border-primary/10 hover:border-primary/30 transition-all group shrink-0">
+                    <div className="flex flex-col max-w-[80px] xl:max-w-[150px]">
+                      <span className="text-[9px] xl:text-[10px] uppercase tracking-wider text-muted-foreground font-black truncate">Student ID</span>
                       <span
-                        className="font-mono text-sm font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent truncate"
+                        className="font-mono text-xs xl:text-sm font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent truncate"
                         style={{ color: progress?.customization?.nameColor ? undefined : undefined, backgroundImage: progress?.customization?.nameColor ? `linear-gradient(to right, ${progress.customization.nameColor}, ${progress.customization.nameColor}dd)` : undefined }}
                         title={studentInfo.studentId}
                       >
                         {studentInfo.studentId.includes('@') ? studentInfo.studentId.split('@')[0] : studentInfo.studentId}
                       </span>
                     </div>
-                    <div className="h-8 w-px bg-primary/10" />
-                    <div className="flex flex-col gap-1">
+                    <div className="h-6 xl:h-8 w-px bg-primary/10" />
+                    <div className="hidden xl:flex flex-col gap-1">
                       <div className="flex justify-between items-center w-24">
                         <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-black">Progress</span>
                         <span className="text-[10px] font-bold text-primary">{totalProgress}%</span>
                       </div>
                       <Progress value={totalProgress} className="h-1.5 w-24 bg-primary/10" />
                     </div>
+                    <div className="xl:hidden flex items-center justify-center p-1 bg-primary/5 rounded-lg border border-primary/10 min-w-[36px]">
+                      <span className="text-[10px] font-black text-primary">{totalProgress}%</span>
+                    </div>
 
-                    <div className="h-8 w-px bg-border ml-1" />
+                    <div className="h-6 xl:h-8 w-px bg-border ml-1" />
                     {/* 帳號頭像 + 下拉選單 */}
                     <div className="relative" ref={accountMenuRef}>
                       <button
@@ -143,9 +174,9 @@ export function Layout({ children }: LayoutProps) {
                           }`}
                         title="帳號選單"
                       >
-                        {(profile?.avatar_url || user?.user_metadata?.avatar_url) ? (
+                        {(profile?.avatar_url || user?.user_metadata?.avatar_url || user?.user_metadata?.picture) ? (
                           <img
-                            src={profile?.avatar_url || user?.user_metadata?.avatar_url}
+                            src={profile?.avatar_url || user?.user_metadata?.avatar_url || user?.user_metadata?.picture}
                             alt="大頭照"
                             className="w-full h-full object-cover"
                             referrerPolicy="no-referrer"
@@ -168,9 +199,9 @@ export function Layout({ children }: LayoutProps) {
                             <div className="p-4 border-b border-primary/10">
                               <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-xl overflow-hidden border border-primary/20 flex-shrink-0">
-                                  {(profile?.avatar_url || user?.user_metadata?.avatar_url) ? (
+                                  {(profile?.avatar_url || user?.user_metadata?.avatar_url || user?.user_metadata?.picture) ? (
                                     <img
-                                      src={profile?.avatar_url || user?.user_metadata?.avatar_url}
+                                      src={profile?.avatar_url || user?.user_metadata?.avatar_url || user?.user_metadata?.picture}
                                       alt="大頭照"
                                       className="w-full h-full object-cover"
                                       referrerPolicy="no-referrer"
@@ -215,10 +246,10 @@ export function Layout({ children }: LayoutProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="md:hidden"
+                className="lg:hidden"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >
-                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                {isMobileMenuOpen ? <X className="h-5 w-5 text-primary" /> : <Menu className="h-5 w-5" />}
               </Button>
             </div>
           </div>
@@ -232,7 +263,7 @@ export function Layout({ children }: LayoutProps) {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={springPresets.gentle}
-            className="md:hidden border-b border-primary/20 bg-background/90 backdrop-blur-xl"
+            className="lg:hidden border-b border-primary/20 bg-background/95 backdrop-blur-2xl shadow-2xl relative z-[60]"
           >
             <nav className="container mx-auto px-4 py-6 flex flex-col gap-3">
               {navItems.map((item) => {
