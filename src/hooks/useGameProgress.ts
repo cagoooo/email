@@ -73,6 +73,16 @@ export function useGameProgress(): UseGameProgressReturn {
     setProgress(storedProgress);
     setStudentInfoState(storedInfo);
     setIsLoading(false);
+
+    // 監聽同頁面其他 hook 實例發出的學生資訊變更事件（解決登出不同步問題）
+    const handleStudentInfoChanged = () => {
+      setStudentInfoState(getStoredStudentInfo());
+    };
+
+    window.addEventListener('studentInfoChanged', handleStudentInfoChanged);
+    return () => {
+      window.removeEventListener('studentInfoChanged', handleStudentInfoChanged);
+    };
   }, []);
 
   const saveProgress = useCallback((newProgress: GameProgress) => {
@@ -89,11 +99,15 @@ export function useGameProgress(): UseGameProgressReturn {
       if (!info) {
         localStorage.removeItem(STUDENT_INFO_KEY);
         setStudentInfoState(null);
+        // 廣播變更給同頁面所有其他 hook 實例
+        window.dispatchEvent(new CustomEvent('studentInfoChanged'));
         return;
       }
 
       localStorage.setItem(STUDENT_INFO_KEY, JSON.stringify(info));
       setStudentInfoState(info);
+      // 廣播變更給同頁面所有其他 hook 實例
+      window.dispatchEvent(new CustomEvent('studentInfoChanged'));
 
       if (!progress || progress.studentId !== info.studentId) {
         const newProgress = createInitialProgress(info.studentId);

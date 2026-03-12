@@ -112,13 +112,14 @@ export function Layout({ children }: LayoutProps) {
                   </NavLink>
 
                   <Card className="flex items-center gap-3 px-4 py-2 bg-background/40 backdrop-blur-md border-primary/10 hover:border-primary/30 transition-all group">
-                    <div className="flex flex-col">
-                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-black">Student ID</span>
+                    <div className="flex flex-col max-w-[100px] sm:max-w-[150px]">
+                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-black truncate">Student ID</span>
                       <span
-                        className="font-mono text-sm font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent"
+                        className="font-mono text-sm font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent truncate"
                         style={{ color: progress?.customization?.nameColor ? undefined : undefined, backgroundImage: progress?.customization?.nameColor ? `linear-gradient(to right, ${progress.customization.nameColor}, ${progress.customization.nameColor}dd)` : undefined }}
+                        title={studentInfo.studentId}
                       >
-                        {studentInfo.studentId}
+                        {studentInfo.studentId.includes('@') ? studentInfo.studentId.split('@')[0] : studentInfo.studentId}
                       </span>
                     </div>
                     <div className="h-8 w-px bg-primary/10" />

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Trophy, Lock, Target, ArrowRight, Sparkles, Calendar, Brain, User, ShoppingBag } from 'lucide-react';
@@ -25,7 +25,7 @@ import { springPresets, fadeInUp, staggerContainer, staggerItem } from '@/lib/mo
 export default function Home() {
   const navigate = useNavigate();
   const { progress, studentInfo, isLoading: isProgressLoading, setStudentInfo } = useGameProgress();
-  const { signInWithGoogle, user, profile, loading: isAuthLoading, signOut } = useAuth();
+  const { signInWithGoogle, user, profile, loading: isAuthLoading } = useAuth();
   const [localStudentId, setLocalStudentId] = React.useState('');
   const [error, setError] = React.useState('');
   const [isLoggingIn, setIsLoggingIn] = React.useState(false);
@@ -54,7 +54,7 @@ export default function Home() {
       const timer = setTimeout(() => {
         console.warn("Safety timeout: Loading persists, forcing clear since data exists.");
         setSafetyCleared(true);
-      }, 3000);
+      }, 1000);
       return () => clearTimeout(timer);
     }
   }, [isProgressLoading, isAuthLoading, !!profile, !!studentInfo]);
@@ -63,9 +63,9 @@ export default function Home() {
   const [maxTimeoutCleared, setMaxTimeoutCleared] = React.useState(false);
   React.useEffect(() => {
     const timer = setTimeout(() => {
-      console.warn("Max timeout: Forcing loading clear after 4 seconds.");
+      console.warn("Max timeout: Forcing loading clear after 1 second.");
       setMaxTimeoutCleared(true);
-    }, 4000);
+    }, 1000);
     return () => clearTimeout(timer);
   }, []); // 只在 mount 時執行一次
 
@@ -77,8 +77,12 @@ export default function Home() {
   React.useEffect(() => {
     if (user && profile && !studentInfo) {
       console.log("偵測到 Supabase Profile，同步至遊戲狀態:", profile.display_name);
+      // 強制：若是 Google 登入或 profile 留存了 email，只取 @ 前的字串作為學號
+      const rawId = profile.student_id || user.email || profile.display_name || '使用者';
+      const finalStudentId = rawId.includes('@') ? rawId.split('@')[0] : rawId;
+
       setStudentInfo({
-        studentId: profile.student_id || profile.display_name || '使用者',
+        studentId: finalStudentId,
         email: user.email || '',
         hasCustomPassword: true,
       });
@@ -166,7 +170,7 @@ export default function Home() {
         </div>
 
         {/* Hero Section */}
-        <section className="relative py-20 lg:py-32 overflow-hidden">
+        <section className="relative pt-0 pb-8 lg:pb-12 overflow-hidden">
           {/* 今日之星跑馬燈 */}
           {studentInfo && (
             <div className="bg-primary/10 border-b border-primary/20 py-2 relative overflow-hidden">
@@ -189,7 +193,7 @@ export default function Home() {
             </div>
           )}
 
-          <div className="container mx-auto px-4 relative z-10">
+          <div className="container mx-auto px-4 relative z-10 pt-16">
             <motion.div
               className="max-w-4xl mx-auto text-center"
               initial={{ opacity: 0, y: 30 }}
@@ -256,20 +260,7 @@ export default function Home() {
                           </div>
                           <span className="text-sm font-bold">{totalProgress}%</span>
                         </div>
-                        <div className="flex gap-2 justify-center mt-6">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-muted-foreground hover:text-primary transition-colors"
-                            onClick={() => {
-                              console.log("登出按鈕點擊 - 開始執行清理與登出");
-                              setStudentInfo(null);
-                              signOut();
-                            }}
-                          >
-                            登出帳號
-                          </Button>
-                        </div>
+
                       </div>
                     </Card>
                   ) : (
@@ -423,7 +414,7 @@ export default function Home() {
           studentInfo && progress && (
             <>
               {/* 智能推薦區塊 */}
-              <section className="py-8">
+              <section className="pt-2 pb-8">
                 <div className="container mx-auto px-4">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -497,11 +488,19 @@ export default function Home() {
                     initial="hidden"
                     animate="visible"
                   >
-                    <motion.div variants={staggerItem} className="text-center mb-12">
-                      <h2 className="text-3xl font-bold mb-4">你的學習進度</h2>
-                      <p className="text-muted-foreground">
-                        學號：{studentInfo.studentId} | Email：{studentInfo.email}
-                      </p>
+                    <motion.div variants={staggerItem} className="text-center mb-12 flex flex-col items-center justify-center">
+                      <h2 className="text-3xl font-bold mb-6">你的學習進度</h2>
+                      <div className="inline-flex items-center gap-4 bg-primary/5 px-6 py-3 rounded-2xl border border-primary/20 shadow-sm flex-wrap justify-center">
+                        <div className="flex items-center gap-2">
+                          <User className="w-5 h-5 text-primary" />
+                          <span className="font-bold text-primary">學號：{studentInfo.studentId.includes('@') ? studentInfo.studentId.split('@')[0] : studentInfo.studentId}</span>
+                        </div>
+                        <div className="hidden sm:block w-px h-5 bg-primary/20"></div>
+                        <div className="flex items-center gap-2">
+                          <Mail className="w-5 h-5 text-muted-foreground" />
+                          <span className="text-muted-foreground">{studentInfo.email}</span>
+                        </div>
+                      </div>
                     </motion.div>
 
                     <motion.div variants={staggerItem} className="mb-12">
