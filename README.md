@@ -1,5 +1,7 @@
 # 技术栈
 
+🌐 **線上使用：[Email 帳密記憶遊樂園](https://cagoooo.github.io/email/)**
+
 该项目使用以下技术栈
 - Vite
 - TypeScript
@@ -37,7 +39,7 @@ Email熟練遊樂園
 - Repository：`cagoooo/email`
 - 可見性：公開
 - 主要技術：TypeScript、React、Vite、Supabase、Tailwind CSS
-- 線上入口：未在 GitHub repository metadata 設定
+- 線上入口：<https://cagoooo.github.io/email/>
 
 ### 可以怎麼應用
 
