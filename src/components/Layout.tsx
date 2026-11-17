@@ -354,6 +354,24 @@ export function Layout({ children }: LayoutProps) {
               <p className="text-xs text-muted-foreground">© 2026 桃園市石門國小. 版權所有</p>
             </div>
           </div>
+
+          {/* 作者署名列 */}
+          <div className="mt-6 pt-4 border-t border-dashed border-border flex flex-col sm:flex-row items-center justify-center gap-x-2 gap-y-1 text-sm sm:text-base text-muted-foreground print:hidden">
+            <p>
+              Made with <span className="inline-block mx-0.5" aria-label="愛心">❤️</span> by{' '}
+              <a
+                href="https://cagoooo.github.io/Akai/"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="阿凱老師教育科技創新專區"
+                className="font-bold text-primary border-b-2 border-dotted border-current pb-px hover:opacity-80 transition-opacity"
+              >
+                阿凱老師
+              </a>
+            </p>
+            <span className="hidden sm:inline" aria-hidden="true">・</span>
+            <p>桃園市龍潭區石門國民小學</p>
+          </div>
         </div>
       </footer>
     </div>
