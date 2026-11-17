@@ -1,3 +1,8 @@
+# App 內建瀏覽器防護 (v1.0.6)
+2026-11-18
+
+- 在 index.html 加入 App 內建瀏覽器防護：LINE 自動改用外部瀏覽器、Android 臉書／IG 自動叫出 Chrome、iPhone 顯示引導，避免 Google 登入 403 disallowed_useragent。
+
 # 離線快取只清除本工具的快取 (v1.0.5)
 2026-11-17
 
