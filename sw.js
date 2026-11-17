@@ -1,9 +1,14 @@
 // Service Worker for PWA offline support
 // 石門國小 Email 學習遊戲 - 離線支援
 
-const CACHE_NAME = 'smes-email-game-v1.0.2';
-const STATIC_CACHE = 'smes-static-v1.0.2';
-const DYNAMIC_CACHE = 'smes-dynamic-v1.0.2';
+// 同網域（cagoooo.github.io）其他工具也共用 Cache Storage，只能清除本工具自己的快取
+const CACHE_PREFIX = 'smes-email-';
+const CACHE_NAME = CACHE_PREFIX + 'game-v1.0.5';
+const STATIC_CACHE = CACHE_PREFIX + 'static-v1.0.5';
+const DYNAMIC_CACHE = CACHE_PREFIX + 'dynamic-v1.0.5';
+// 本工具以前用過、但不是 smes-email- 開頭的快取名稱（取自 git 歷史）
+const LEGACY_CACHES = ['smes-static-v1.0.1', 'smes-dynamic-v1.0.1', 'smes-static-v1.0.2', 'smes-dynamic-v1.0.2'];
+const isOwnCache = (name) => name.startsWith(CACHE_PREFIX) || LEGACY_CACHES.includes(name);
 
 // 需要緩存的靜態資源
 const STATIC_ASSETS = [
@@ -42,7 +47,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (!cacheWhitelist.includes(cacheName)) {
+          if (isOwnCache(cacheName) && !cacheWhitelist.includes(cacheName)) {
             console.log(' [SW] Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
