@@ -3,9 +3,9 @@
 
 // 同網域（cagoooo.github.io）其他工具也共用 Cache Storage，只能清除本工具自己的快取
 const CACHE_PREFIX = 'smes-email-';
-const CACHE_NAME = CACHE_PREFIX + 'game-v1.0.6';
-const STATIC_CACHE = CACHE_PREFIX + 'static-v1.0.6';
-const DYNAMIC_CACHE = CACHE_PREFIX + 'dynamic-v1.0.6';
+const CACHE_NAME = CACHE_PREFIX + 'game-v1.0.7';
+const STATIC_CACHE = CACHE_PREFIX + 'static-v1.0.7';
+const DYNAMIC_CACHE = CACHE_PREFIX + 'dynamic-v1.0.7';
 // 本工具以前用過、但不是 smes-email- 開頭的快取名稱（取自 git 歷史）
 const LEGACY_CACHES = ['smes-static-v1.0.1', 'smes-dynamic-v1.0.1', 'smes-static-v1.0.2', 'smes-dynamic-v1.0.2'];
 const isOwnCache = (name) => name.startsWith(CACHE_PREFIX) || LEGACY_CACHES.includes(name);
