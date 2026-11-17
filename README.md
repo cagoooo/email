@@ -2,7 +2,7 @@
 
 🌐 **線上使用：[Email 帳密記憶遊樂園](https://cagoooo.github.io/email/)**
 
-> 📌 **目前版本：v1.0.4**（依據 `package.json`）
+> 📌 **目前版本：v1.0.5**（依據 `package.json`）
 
 该项目使用以下技术栈
 - Vite
