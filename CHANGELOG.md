@@ -1,3 +1,8 @@
+# App 內建瀏覽器按 Google 登入前先提醒 (v1.0.7)
+2026-11-18
+
+- 在 useAuth 的 signInWithGoogle 最前面加上檢查：在 LINE／FB 等 App 內建瀏覽器中按 Google 登入時，先跳出提醒，不開登入視窗，避免撞到 403 disallowed_useragent。
+
 # App 內建瀏覽器防護 (v1.0.6)
 2026-11-18
 
